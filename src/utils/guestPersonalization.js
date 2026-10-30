@@ -34,25 +34,30 @@ export function getGuestFromUrl(searchString) {
 /**
  * Formats the personalized greeting based on user input
  * @param {string} rawGuest - Raw or sanitized guest string
- * @returns {{ label: string, greeting: string, subtitle: string, isPersonalized: boolean }}
+ * @returns {{ label: string, greeting: string, fullTitle: string, subtitle: string, isPersonalized: boolean }}
  */
 export function formatGuestGreeting(rawGuest) {
-  const guest = (rawGuest || '').trim();
+  let guest = (rawGuest || '').trim();
+
+  // Normalize common casing like "Kushal & FAMILY" -> "Kushal & Family"
+  if (guest) {
+    guest = guest.replace(/\bFAMILY\b/gi, 'Family');
+  }
 
   if (!guest) {
     return {
-      label: 'A WARM WELCOME TO',
+      label: 'WITH LOVE, WE WELCOME',
       greeting: 'Dear Family & Friends',
-      fullTitle: 'A Warm Welcome to Family & Friends',
+      fullTitle: 'With Love, We Welcome Dear Family & Friends',
       subtitle: 'You are a cherished part of our celebration.',
       isPersonalized: false,
     };
   }
 
   return {
-    label: 'A WARM WELCOME TO',
+    label: 'WITH LOVE, WE WELCOME',
     greeting: guest,
-    fullTitle: `A Warm Welcome to ${guest}`,
+    fullTitle: `With Love, We Welcome ${guest}`,
     subtitle: 'You are a cherished part of our celebration.',
     isPersonalized: true,
   };

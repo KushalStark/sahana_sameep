@@ -528,10 +528,15 @@ export default function EnvelopeModal({ wedding, guestName, guestGreeting, onEnt
                     repeat: isCardSettled ? Infinity : 0,
                     repeatType: 'reverse',
                   }}
-                  className="w-full min-h-[46px] py-2.5 px-4 rounded-full bg-gradient-to-r from-[#8C632F] via-[#B89255] to-[#8C632F] text-white font-sans text-xs uppercase tracking-[0.22em] font-bold shadow-lg active:scale-95 transition-transform flex items-center justify-center gap-2 cursor-pointer"
+                  className="w-full min-h-[48px] py-2.5 px-4 rounded-full bg-gradient-to-r from-[#8C632F] via-[#B89255] to-[#8C632F] text-white shadow-lg active:scale-95 transition-all flex flex-col items-center justify-center cursor-pointer group"
                 >
-                  <span>ENTER WEDDING WEBSITE</span>
-                  <ArrowRight className="w-4 h-4" />
+                  <div className="flex items-center gap-1.5 font-sans text-xs uppercase tracking-[0.22em] font-bold">
+                    <span>DISCOVER OUR WEDDING</span>
+                    <ArrowRight className="w-4 h-4" />
+                  </div>
+                  <span className="font-serif text-[10px] text-[#FFF4DF] tracking-wide opacity-90">
+                    Explore our celebration, memories and wedding details.
+                  </span>
                 </motion.button>
 
                 <div className="flex items-center justify-between px-1 text-[9.5px]">

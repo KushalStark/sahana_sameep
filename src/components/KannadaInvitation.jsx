@@ -13,7 +13,7 @@ import { GaneshaMotif, CornerFlourish, OrnamentalDivider, LotusMotif } from '../
  * - Sacred Ganesha motif and || ಶ್ರೀ ಗಣೇಶಾಯ ನಮಃ || invocation
  * - Olive-green ornamental double borders (#4A5D43)
  * - Deep kumkum red accents (#8B2628)
- * - Verified Kannada script: ಸಾಹನಾ ಮತ್ತು ಸಮೀಪ, 08-02-2027 ಸೋಮವಾರ, ಮಧ್ಯಾಹ್ನ 12:35
+ * - Verified Kannada script: ಸಹನ ಮತ್ತು ಸಮೀಪ್, 08-02-2027 ಸೋಮವಾರ, ಮಧ್ಯಾಹ್ನ 12:35
  * - Verified venue: ವಿಶ್ವಮಾನವ ಸಭಾಭವನ, Sagara Road, Ripponpete
  * 
  * All copy is dynamically bound to src/config/wedding.js for easy family edits.

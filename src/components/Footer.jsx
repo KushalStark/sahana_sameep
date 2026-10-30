@@ -29,8 +29,11 @@ export default function Footer({ couple, thankYou, onOpenEnvelope }) {
         <OrnamentalDivider className="max-w-[200px] mx-auto text-gold mb-5" />
 
         {/* Couple Names */}
-        <div className="font-serif text-xl sm:text-2xl tracking-[0.16em] text-charcoal-deep font-semibold uppercase mb-3">
+        <div className="font-serif text-xl sm:text-2xl tracking-[0.16em] text-charcoal-deep font-semibold uppercase mb-1">
           {couple.bride} &amp; {couple.groom}
+        </div>
+        <div className="font-kannada font-bold text-sm text-gold-dark mb-3">
+          {couple.coupleKannada}
         </div>
 
         <p className="font-serif text-sm text-charcoal-light italic max-w-md mx-auto mb-8 leading-relaxed">

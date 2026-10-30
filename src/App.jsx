@@ -12,7 +12,6 @@ import Hero from './components/Hero';
 import KannadaInvitation from './components/KannadaInvitation';
 import FloatingRing from './components/FloatingRing';
 import Story from './components/Story';
-import MangalsutraDetail from './components/MangalsutraDetail';
 import Events from './components/Events';
 import Countdown from './components/Countdown';
 import Venue from './components/Venue';
@@ -155,9 +154,6 @@ export default function App() {
 
           {/* Section 7: Our Story Section */}
           <Story story={weddingConfig.story} />
-
-          {/* 3D Wedding Element B: Mangalsutra / Sacred Thread Detail */}
-          <MangalsutraDetail enabled={true} />
 
           {/* Section 9: Wedding Events Section with Interactive 3D Flip Cards */}
           <Events events={weddingConfig.events} />

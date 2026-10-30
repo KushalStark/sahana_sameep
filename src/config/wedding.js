@@ -12,9 +12,9 @@ export const weddingConfig = {
   couple: {
     bride: "Sahana",
     groom: "Sameep",
-    brideKannada: "ಸಾಹನಾ",
-    groomKannada: "ಸಮೀಪ",
-    coupleKannada: "ಸಾಹನಾ ಮತ್ತು ಸಮೀಪ",
+    brideKannada: "ಸಹನ",
+    groomKannada: "ಸಮೀಪ್",
+    coupleKannada: "ಸಹನ ಮತ್ತು ಸಮೀಪ್",
     monogram: "S & S",
     tagline: "Two hearts. One beautiful beginning.",
     invitationSubtitle: "A celebration of love",
@@ -58,15 +58,26 @@ export const weddingConfig = {
   // English Invitation Copy (Revealed inside 3D Envelope)
   invitationCard: {
     blessingHeading: "WITH THE BLESSINGS OF THE DIVINE AND OUR FAMILIES",
-    callText: "Cordially invite you to join us and bless us on our wedding day.",
-    actionText: "Explore Wedding Details",
+    callText: "Cordially invite you to join us and celebrate our wedding day.",
+    actionText: "DISCOVER OUR WEDDING",
+    actionSubtitle: "Explore our celebration, memories and wedding details.",
+    actionTextKannada: "ನಮ್ಮ ವಿವಾಹ ವಿವರಗಳನ್ನು ನೋಡಿ",
+    actionSubtitleKannada: "ನಮ್ಮ ವಿವಾಹದ ಸಂಭ್ರಮ ಹಾಗೂ ನೆನಪುಗಳನ್ನು ಅನ್ವೇಷಿಸಿ.",
+  },
+
+  // Wedding Rings Presentation Configuration
+  weddingRings: {
+    subtitle: "Two Hearts. One Promise.",
+    heading: "Our Wedding Rings",
+    quote: "As these golden bands circle without beginning or end, so too does our devotion.",
+    image: "/images/wedding-rings.jpg",
   },
 
   // Dedicated Traditional Kannada Invitation Details
   kannadaInvitation: {
     invocation: "|| ಶ್ರೀ ಗಣೇಶಾಯ ನಮಃ ||",
     tagline: "ಶುಭ ವಿವಾಹ ಆಮಂತ್ರಣ ಪತ್ರಿಕೆ",
-    couple: "ಸಾಹನಾ ಮತ್ತು ಸಮೀಪ",
+    couple: "ಸಹನ ಮತ್ತು ಸಮೀಪ್",
     dateLabel: "ದಿನಾಂಕ",
     dateValue: "08-02-2027, ಸೋಮವಾರ",
     muhurthaLabel: "ಮುಹೂರ್ತ",
@@ -74,7 +85,7 @@ export const weddingConfig = {
     venueLabel: "ವಿವಾಹ ಸ್ಥಳ",
     venueValue: "ವಿಶ್ವಮಾನವ ಸಭಾಭವನ",
     locationLabel: "ಸ್ಥಳ",
-    locationValue: "Sagara Road, Ripponpete",
+    locationValue: "ಸಾಗರ ರಸ್ತೆ, ರಿಪ್ಪನ್‌ಪೇಟೆ",
     welcomeNote: "ತಾವೆಲ್ಲರೂ ಸಕುಟುಂಬ ಸಮೇತರಾಗಿ ಆಗಮಿಸಿ, ವಧು-ವರರನ್ನು ಹರಸಿ ಆಶೀರ್ವದಿಸಬೇಕಾಗಿ ವಿನಮ್ರ ಪ್ರಾರ್ಥನೆ.",
   },
 
@@ -195,10 +206,11 @@ export const weddingConfig = {
     ]
   },
 
-  // Family Note
+  // Family Note & Portrait Presentation
   familyNote: {
-    title: "A Note From Our Families",
-    subtitle: "Your love, blessings and presence mean the world to us.",
+    heading: "THE FAMILIES BEHIND OUR CELEBRATION",
+    subtitle: "Two families, one beautiful beginning.",
+    photo: "/images/family-portrait.jpg",
     brideFamily: {
       title: "Bride's Family",
       message: "With warm hearts and deep gratitude, we invite you to bless our daughter Sahana as she embarks on this magical new chapter of life with Sameep.",
