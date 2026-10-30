@@ -1,43 +1,279 @@
 import React, { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Sparkles, Eye, RotateCw } from 'lucide-react';
+import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
+import { Sparkles, Move3d } from 'lucide-react';
 import { LotusMotif, OrnamentalDivider } from '../assets/BotanicalElements';
-import SSMonogram from '../assets/SSMonogram';
 import { weddingConfig } from '../config/wedding';
 
 /**
  * ====================================================================
- * 3D WEDDING RINGS PRESENTATION — SAHANA & SAMEEP
+ * PARAMETRIC GEOMETRY GENERATORS FOR THE AUTHENTIC WEDDING RINGS
  * ====================================================================
- * Precise 3D recreation of the couple's verified wedding rings from
- * the official reference photograph:
- * - Ring 1 (Groom's band): Broader warm-gold contoured band with prominent
- *   solitaire diamond set in a curved bypass channel.
- * - Ring 2 (Bride's band): Contoured gold band with prominent round solitaire
- *   diamond and delicate sparkling pavé diamond detailing along the crest.
- * - Physically based metallic PBR materials (18k warm gold) + high-IOR refractive diamonds.
- * - Romantic slow floating and 3D rotation that catches the light naturally.
- * - Dark luxury presentation background matching the authentic photo setting.
- * - Seamless toggle between interactive 3D jewellery view and high-res photo reference.
- * - IntersectionObserver pauses rendering when off-screen for mobile battery efficiency.
+ * Recreates the exact jewellery from the couple's verified photograph:
+ * - Real faceted round brilliant-cut diamonds (table, crown, girdle, pavilion).
+ * - Groom's broad contoured gold band with concave channel and bypass wave.
+ * - Bride's contoured gold band with upper pavé diamond channel and bypass solitaire.
+ * - Genuine hollow interior cylinders for authentic comfort-fit profile.
+ */
+
+// Faceted Round Brilliant Diamond Geometry
+function createBrilliantCutGeometry(radius = 1, options = {}) {
+  const segments = options.segments || 16;
+  const tableRadius = radius * 0.58;
+  const crownHeight = radius * 0.32;
+  const girdleThickness = radius * 0.08;
+  const pavilionDepth = radius * 0.72;
+
+  const vertices = [];
+  const indices = [];
+
+  // Table center and vertices (at y = crownHeight)
+  const tableCenterIndex = 0;
+  vertices.push(0, crownHeight, 0);
+
+  for (let i = 0; i < segments; i++) {
+    const angle = (i / segments) * Math.PI * 2;
+    vertices.push(Math.cos(angle) * tableRadius, crownHeight, Math.sin(angle) * tableRadius);
+  }
+
+  for (let i = 1; i <= segments; i++) {
+    const next = i === segments ? 1 : i + 1;
+    indices.push(tableCenterIndex, next, i);
+  }
+
+  // Girdle upper rim
+  const girdleUpperOffset = vertices.length / 3;
+  for (let i = 0; i < segments; i++) {
+    const angle = (i / segments) * Math.PI * 2;
+    vertices.push(Math.cos(angle) * radius, girdleThickness * 0.5, Math.sin(angle) * radius);
+  }
+
+  for (let i = 0; i < segments; i++) {
+    const tCurrent = 1 + i;
+    const tNext = 1 + ((i + 1) % segments);
+    const gCurrent = girdleUpperOffset + i;
+    const gNext = girdleUpperOffset + ((i + 1) % segments);
+
+    indices.push(tCurrent, gNext, gCurrent);
+    indices.push(tCurrent, tNext, gNext);
+  }
+
+  // Girdle lower rim
+  const girdleLowerOffset = vertices.length / 3;
+  for (let i = 0; i < segments; i++) {
+    const angle = (i / segments) * Math.PI * 2;
+    vertices.push(Math.cos(angle) * radius, -girdleThickness * 0.5, Math.sin(angle) * radius);
+  }
+
+  for (let i = 0; i < segments; i++) {
+    const uCurr = girdleUpperOffset + i;
+    const uNext = girdleUpperOffset + ((i + 1) % segments);
+    const lCurr = girdleLowerOffset + i;
+    const lNext = girdleLowerOffset + ((i + 1) % segments);
+
+    indices.push(uCurr, uNext, lCurr);
+    indices.push(uNext, lNext, lCurr);
+  }
+
+  // Culet (point at pavilion tip)
+  const culetIndex = vertices.length / 3;
+  vertices.push(0, -pavilionDepth, 0);
+
+  for (let i = 0; i < segments; i++) {
+    const lCurr = girdleLowerOffset + i;
+    const lNext = girdleLowerOffset + ((i + 1) % segments);
+    indices.push(lCurr, culetIndex, lNext);
+  }
+
+  const geometry = new THREE.BufferGeometry();
+  geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
+  geometry.setIndex(indices);
+  // Convert to non-indexed buffer geometry for sharp faceted diamond reflections
+  const nonIndexedGeo = geometry.toNonIndexed();
+  nonIndexedGeo.computeVertexNormals();
+  geometry.dispose();
+
+  return nonIndexedGeo;
+}
+
+// Ring 1: Groom's Broad Band with Concave Channel & Bypass Wave
+function createBroadContouredRingGeometry(options = {}) {
+  const thetaSegments = options.thetaSegments || 96;
+  const numProfilePts = 20;
+  const innerRadius = options.innerRadius || 1.32;
+  const bandThickness = options.bandThickness || 0.23;
+  const bandWidth = options.bandWidth || 0.56;
+
+  const vertices = [];
+  const uvs = [];
+  const indices = [];
+
+  for (let i = 0; i <= thetaSegments; i++) {
+    const theta = (i / thetaSegments) * Math.PI * 2;
+    const cosT = Math.cos(theta);
+    const sinT = Math.sin(theta);
+
+    // Front bypass wave contour near theta = Math.PI * 0.5
+    const angleDiff = Math.atan2(Math.sin(theta - Math.PI * 0.5), Math.cos(theta - Math.PI * 0.5));
+    const waveInfluence = Math.exp(-(angleDiff * angleDiff) / 0.45);
+    const waveShiftZ = Math.sin(angleDiff * 2.0) * 0.14 * waveInfluence;
+    const waveFlare = waveInfluence * 0.09;
+
+    for (let j = 0; j < numProfilePts; j++) {
+      let r, z;
+      const t = j / (numProfilePts - 1);
+
+      if (t < 0.25) {
+        // Inner comfort-fit cylindrical wall (genuine hollow center)
+        const s = t / 0.25;
+        r = innerRadius;
+        z = -bandWidth * 0.5 + s * bandWidth;
+      } else if (t < 0.35) {
+        // Top bevel rim
+        const s = (t - 0.25) / 0.10;
+        r = innerRadius + s * bandThickness;
+        z = bandWidth * 0.5;
+      } else if (t < 0.85) {
+        // Outer sculpted surface: concave center channel with raised rim lips
+        const s = (t - 0.35) / 0.50;
+        const v = 2 * (s - 0.5);
+        const channelDip = (1 - v * v) * 0.055;
+        r = innerRadius + bandThickness + waveFlare - channelDip;
+        z = (bandWidth * 0.5 - s * bandWidth) + waveShiftZ;
+      } else {
+        // Bottom bevel rim
+        const s = (t - 0.85) / 0.15;
+        r = innerRadius + (1 - s) * bandThickness;
+        z = -bandWidth * 0.5;
+      }
+
+      const x = r * cosT;
+      const y = r * sinT;
+      vertices.push(x, y, z);
+      uvs.push(i / thetaSegments, j / (numProfilePts - 1));
+    }
+  }
+
+  for (let i = 0; i < thetaSegments; i++) {
+    for (let j = 0; j < numProfilePts - 1; j++) {
+      const a = i * numProfilePts + j;
+      const b = (i + 1) * numProfilePts + j;
+      const c = (i + 1) * numProfilePts + (j + 1);
+      const d = i * numProfilePts + (j + 1);
+
+      indices.push(a, b, d);
+      indices.push(b, c, d);
+    }
+  }
+
+  const geometry = new THREE.BufferGeometry();
+  geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
+  geometry.setAttribute('uv', new THREE.Float32BufferAttribute(uvs, 2));
+  geometry.setIndex(indices);
+  geometry.computeVertexNormals();
+
+  return geometry;
+}
+
+// Ring 2: Bride's Contoured Band with Pavé Channel & Bypass Wave
+function createSlimDiamondBandGeometry(options = {}) {
+  const thetaSegments = options.thetaSegments || 96;
+  const numProfilePts = 20;
+  const innerRadius = options.innerRadius || 1.22;
+  const bandThickness = options.bandThickness || 0.19;
+  const bandWidth = options.bandWidth || 0.40;
+
+  const vertices = [];
+  const uvs = [];
+  const indices = [];
+
+  for (let i = 0; i <= thetaSegments; i++) {
+    const theta = (i / thetaSegments) * Math.PI * 2;
+    const cosT = Math.cos(theta);
+    const sinT = Math.sin(theta);
+
+    // Bypass curve around front
+    const angleDiff = Math.atan2(Math.sin(theta - Math.PI * 0.5), Math.cos(theta - Math.PI * 0.5));
+    const waveInfluence = Math.exp(-(angleDiff * angleDiff) / 0.55);
+    const waveShiftZ = Math.sin(angleDiff * 1.8) * 0.08 * waveInfluence;
+    const waveFlare = waveInfluence * 0.06;
+
+    for (let j = 0; j < numProfilePts; j++) {
+      let r, z;
+      const t = j / (numProfilePts - 1);
+
+      if (t < 0.25) {
+        // Inner comfort-fit wall (genuine hollow center)
+        const s = t / 0.25;
+        r = innerRadius;
+        z = -bandWidth * 0.5 + s * bandWidth;
+      } else if (t < 0.35) {
+        // Top bevel rim
+        const s = (t - 0.25) / 0.10;
+        r = innerRadius + s * bandThickness;
+        z = bandWidth * 0.5;
+      } else if (t < 0.85) {
+        // Outer curved profile with upper pavé diamond channel
+        const s = (t - 0.35) / 0.50;
+        const v = 2 * (s - 0.5);
+        const channel = v > 0.1 ? 0.025 : 0;
+        r = innerRadius + bandThickness + waveFlare - channel;
+        z = (bandWidth * 0.5 - s * bandWidth) + waveShiftZ;
+      } else {
+        // Bottom bevel rim
+        const s = (t - 0.85) / 0.15;
+        r = innerRadius + (1 - s) * bandThickness;
+        z = -bandWidth * 0.5;
+      }
+
+      const x = r * cosT;
+      const y = r * sinT;
+      vertices.push(x, y, z);
+      uvs.push(i / thetaSegments, j / (numProfilePts - 1));
+    }
+  }
+
+  for (let i = 0; i < thetaSegments; i++) {
+    for (let j = 0; j < numProfilePts - 1; j++) {
+      const a = i * numProfilePts + j;
+      const b = (i + 1) * numProfilePts + j;
+      const c = (i + 1) * numProfilePts + (j + 1);
+      const d = i * numProfilePts + (j + 1);
+
+      indices.push(a, b, d);
+      indices.push(b, c, d);
+    }
+  }
+
+  const geometry = new THREE.BufferGeometry();
+  geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
+  geometry.setAttribute('uv', new THREE.Float32BufferAttribute(uvs, 2));
+  geometry.setIndex(indices);
+  geometry.computeVertexNormals();
+
+  return geometry;
+}
+
+/**
+ * ====================================================================
+ * MAIN COMPONENT: 3D WEDDING RINGS PRESENTATION
+ * ====================================================================
  */
 export default function FloatingRing() {
   const mountRef = useRef(null);
   const [webglSupported, setWebglSupported] = useState(true);
   const [isInView, setIsInView] = useState(false);
-  const [viewMode, setViewMode] = useState('3d'); // '3d' | 'photo'
+  const [isUserInteracting, setIsUserInteracting] = useState(false);
 
   const ringsConfig = weddingConfig.weddingRings || {
     subtitle: "Two Hearts. One Promise.",
     heading: "Our Wedding Rings",
     quote: "As these golden bands circle without beginning or end, so too does our devotion.",
-    image: "/images/wedding-rings.jpg",
   };
 
   useEffect(() => {
     const container = mountRef.current;
-    if (!container || viewMode !== '3d') return;
+    if (!container) return;
 
     // Check WebGL availability
     try {
@@ -62,14 +298,16 @@ export default function FloatingRing() {
     observer.observe(container);
 
     // Three.js Scene Setup
-    const width = container.clientWidth || 340;
-    const height = 300;
+    const width = container.clientWidth || 360;
+    const height = 320;
 
     const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(38, width / height, 0.1, 100);
-    camera.position.set(0, 0.5, 7.8);
+    const camera = new THREE.PerspectiveCamera(36, width / height, 0.1, 100);
+    camera.position.set(0, 0.35, 7.5);
 
     let renderer;
+    let envTexture;
+    let pmremGenerator;
     try {
       renderer = new THREE.WebGLRenderer({
         alpha: true,
@@ -81,6 +319,12 @@ export default function FloatingRing() {
       renderer.toneMapping = THREE.ACESFilmicToneMapping;
       renderer.toneMappingExposure = 1.35;
       container.appendChild(renderer.domElement);
+
+      // Studio Room Environment for photorealistic gold & diamond reflections
+      pmremGenerator = new THREE.PMREMGenerator(renderer);
+      pmremGenerator.compileEquirectangularShader();
+      envTexture = pmremGenerator.fromScene(new RoomEnvironment(), 0.04).texture;
+      scene.environment = envTexture;
     } catch (err) {
       setWebglSupported(false);
       return;
@@ -92,120 +336,134 @@ export default function FloatingRing() {
     // ================================================================
     // MATERIALS CONFIGURATION (Physically Based Rendering)
     // ================================================================
-    // 18k Warm Yellow/Rose Gold (Polished finish)
+    // 18k Warm Indian Yellow/Rose Gold with high metalness & polished reflections
     const goldMaterial = new THREE.MeshStandardMaterial({
-      color: 0xDEB078,
-      metalness: 0.96,
-      roughness: 0.15,
-      envMapIntensity: 1.2,
+      color: 0xDE9F62,
+      metalness: 0.95,
+      roughness: 0.17,
+      envMapIntensity: 1.35,
     });
 
-    // Brilliant-Cut Refractive Diamond Material
+    // Brilliant-Cut Refractive Diamond Material with fire dispersion & facet sparkles
     const diamondMaterial = new THREE.MeshPhysicalMaterial({
       color: 0xFFFFFF,
-      transmission: 0.94,
-      opacity: 1,
-      transparent: true,
-      roughness: 0.03,
+      metalness: 0.0,
+      roughness: 0.0,
+      transmission: 0.42,
       ior: 2.417, // Natural diamond refractive index
+      thickness: 0.8,
+      specularIntensity: 4.0,
+      specularColor: 0xFFFFFF,
       clearcoat: 1.0,
-      clearcoatRoughness: 0.02,
-      specularIntensity: 1.5,
+      clearcoatRoughness: 0.0,
+      dispersion: 0.085, // Diamond spectral fire dispersion
+      envMapIntensity: 3.5,
     });
 
-    // Helper: Create brilliant diamond geometry (facet cut)
-    const createDiamondMesh = (size = 0.3) => {
-      // Faceted crown & pavilion
-      const geom = new THREE.OctahedronGeometry(size, 1);
-      geom.scale(1, 0.85, 1);
-      return new THREE.Mesh(geom, diamondMaterial);
-    };
+    // Disposal tracker
+    const geometriesToDispose = [];
 
     // ================================================================
-    // RING 1: GROOM'S WEDDING BAND (Broader, Curved Contour with Solitaire)
+    // RING 1: GROOM'S WEDDING BAND (Broader Sculpted Concave Band with Solitaire)
     // ================================================================
     const ring1Group = new THREE.Group();
 
-    // Broader gold band with genuine hole through center
-    const band1Radius = 1.45;
-    const band1Tube = 0.26;
-    const band1Geo = new THREE.TorusGeometry(band1Radius, band1Tube, 32, 96);
-    const band1Mesh = new THREE.Mesh(band1Geo, goldMaterial);
-    ring1Group.add(band1Mesh);
+    const ring1Geo = createBroadContouredRingGeometry();
+    geometriesToDispose.push(ring1Geo);
+    const ring1Mesh = new THREE.Mesh(ring1Geo, goldMaterial);
+    ring1Group.add(ring1Mesh);
 
-    // Diagonal bypass wave accent collar
-    const waveGeo1 = new THREE.TorusGeometry(band1Radius + 0.02, band1Tube * 0.55, 16, 64, Math.PI * 0.45);
-    const waveMesh1 = new THREE.Mesh(waveGeo1, goldMaterial);
-    waveMesh1.rotation.z = Math.PI * 0.35;
-    waveMesh1.position.set(0, 0, 0.06);
-    ring1Group.add(waveMesh1);
+    // Prominent Solitaire Diamond mounted nestled inside the concave bypass groove
+    const diamond1Geo = createBrilliantCutGeometry(0.26, { segments: 16 });
+    geometriesToDispose.push(diamond1Geo);
+    const diamond1Mesh = new THREE.Mesh(diamond1Geo, diamondMaterial);
+    diamond1Mesh.position.set(0.02, 1.48, 0.06);
+    diamond1Mesh.rotation.x = -Math.PI * 0.18;
+    ring1Group.add(diamond1Mesh);
 
-    // Prominent Solitaire Diamond in bypass setting
-    const diamond1 = createDiamondMesh(0.38);
-    diamond1.position.set(0, band1Radius + 0.08, 0.12);
-    diamond1.rotation.x = Math.PI * 0.15;
-    ring1Group.add(diamond1);
+    // Gold Bezel Setting Collar surrounding the solitaire diamond
+    const bezel1Geo = new THREE.CylinderGeometry(0.28, 0.26, 0.08, 24, 1, true);
+    geometriesToDispose.push(bezel1Geo);
+    const bezel1Mesh = new THREE.Mesh(bezel1Geo, goldMaterial);
+    bezel1Mesh.position.set(0.02, 1.45, 0.05);
+    bezel1Mesh.rotation.x = -Math.PI * 0.18;
+    ring1Group.add(bezel1Mesh);
 
-    // Bezel gold prongs / bezel channel
-    const bezelGeo1 = new THREE.CylinderGeometry(0.42, 0.44, 0.14, 24, 1, true);
-    const bezelMesh1 = new THREE.Mesh(bezelGeo1, goldMaterial);
-    bezelMesh1.position.copy(diamond1.position);
-    bezelMesh1.rotation.x = Math.PI * 0.5;
-    ring1Group.add(bezelMesh1);
-
-    // Position Ring 1 (Foreground, left)
-    ring1Group.rotation.x = Math.PI * 0.38;
-    ring1Group.rotation.y = -Math.PI * 0.15;
-    ring1Group.position.set(-0.65, -0.25, 0.2);
+    // Base alignment for Ring 1 (Foreground, left)
+    ring1Group.rotation.x = Math.PI * 0.32;
+    ring1Group.rotation.y = -Math.PI * 0.08;
+    ring1Group.rotation.z = -Math.PI * 0.04;
+    ring1Group.position.set(-0.36, -0.15, 0.12);
     ringsMasterGroup.add(ring1Group);
 
     // ================================================================
-    // RING 2: BRIDE'S WEDDING BAND (Contoured, Solitaire + Pavé Diamonds)
+    // RING 2: BRIDE'S WEDDING BAND (Two-Tier Contoured: Pavé Crest + Bypass Solitaire)
     // ================================================================
     const ring2Group = new THREE.Group();
 
-    // Elegant gold band with genuine center hole
-    const band2Radius = 1.35;
-    const band2Tube = 0.20;
-    const band2Geo = new THREE.TorusGeometry(band2Radius, band2Tube, 32, 96);
-    const band2Mesh = new THREE.Mesh(band2Geo, goldMaterial);
-    ring2Group.add(band2Mesh);
+    const ring2Geo = createSlimDiamondBandGeometry();
+    geometriesToDispose.push(ring2Geo);
+    const ring2Mesh = new THREE.Mesh(ring2Geo, goldMaterial);
+    ring2Group.add(ring2Mesh);
 
-    // Prominent Solitaire Diamond
-    const diamond2 = createDiamondMesh(0.36);
-    diamond2.position.set(0, band2Radius + 0.06, 0.10);
-    diamond2.rotation.x = Math.PI * 0.15;
-    ring2Group.add(diamond2);
+    // Prominent Solitaire Diamond on Bride's Band nestled in the bypass curve
+    const diamond2Geo = createBrilliantCutGeometry(0.23, { segments: 16 });
+    geometriesToDispose.push(diamond2Geo);
+    const diamond2Mesh = new THREE.Mesh(diamond2Geo, diamondMaterial);
+    diamond2Mesh.position.set(0.12, 1.38, 0.04);
+    diamond2Mesh.rotation.x = -Math.PI * 0.18;
+    diamond2Mesh.rotation.z = -0.08;
+    ring2Group.add(diamond2Mesh);
 
-    // Decorative Pavé Diamond Detail Row along upper curve (8 micro diamonds)
-    const paveCount = 8;
-    const paveMeshes = [];
-    const paveGeo = new THREE.OctahedronGeometry(0.08, 0);
+    // Bezel setting collar for solitaire
+    const bezel2Geo = new THREE.CylinderGeometry(0.25, 0.23, 0.07, 24, 1, true);
+    geometriesToDispose.push(bezel2Geo);
+    const bezel2Mesh = new THREE.Mesh(bezel2Geo, goldMaterial);
+    bezel2Mesh.position.copy(diamond2Mesh.position);
+    bezel2Mesh.rotation.copy(diamond2Mesh.rotation);
+    ring2Group.add(bezel2Mesh);
+
+    // Continuous Pavé Micro-Diamonds Row along the upper crest (10 micro diamonds)
+    // Runs along the top contour leading gracefully into the bypass solitaire
+    const paveCount = 10;
+    const microDiamondGeo = createBrilliantCutGeometry(0.058, { segments: 10 });
+    geometriesToDispose.push(microDiamondGeo);
+
+    const prongGeo = new THREE.SphereGeometry(0.018, 8, 8);
+    geometriesToDispose.push(prongGeo);
 
     for (let i = 0; i < paveCount; i++) {
-      const angle = (Math.PI * 0.5) + ((i - (paveCount - 1) / 2) * 0.12);
-      const px = Math.cos(angle) * (band2Radius + 0.12);
-      const py = Math.sin(angle) * (band2Radius + 0.12);
-      const pz = 0.08;
+      // Arc along upper crest
+      const angle = (Math.PI * 0.55) + (i * 0.034);
+      const px = Math.cos(angle) * 1.39;
+      const py = Math.sin(angle) * 1.39;
+      const pz = 0.10;
 
-      const pMesh = new THREE.Mesh(paveGeo, diamondMaterial);
-      pMesh.position.set(px, py, pz);
-      ring2Group.add(pMesh);
-      paveMeshes.push(pMesh);
+      const mMesh = new THREE.Mesh(microDiamondGeo, diamondMaterial);
+      mMesh.position.set(px, py, pz);
+      mMesh.rotation.z = angle - Math.PI * 0.5;
+      mMesh.rotation.x = -Math.PI * 0.22;
+      ring2Group.add(mMesh);
+
+      // Gold prong bead between diamonds
+      const prongMesh = new THREE.Mesh(prongGeo, goldMaterial);
+      prongMesh.position.set(px, py + 0.02, pz + 0.015);
+      ring2Group.add(prongMesh);
     }
 
-    // Position Ring 2 (Resting beside/above Ring 1, tilted as in photo)
-    ring2Group.rotation.x = Math.PI * 0.32;
-    ring2Group.rotation.y = Math.PI * 0.22;
-    ring2Group.position.set(0.75, 0.28, -0.15);
+    // Position Ring 2: Resting snugly across Ring 1's rim at ~22° tilt (matching photograph)
+    ring2Group.rotation.x = Math.PI * 0.26;
+    ring2Group.rotation.y = Math.PI * 0.16;
+    ring2Group.rotation.z = -Math.PI * 0.08;
+    ring2Group.position.set(0.34, 0.12, -0.08);
     ringsMasterGroup.add(ring2Group);
 
     scene.add(ringsMasterGroup);
 
     // ================================================================
-    // LIGHTING SETUP (Multi-angle luxury jewellery illumination)
+    // LIGHTING SETUP (Luxury Jewellery Studio Illumination)
     // ================================================================
-    const ambientLight = new THREE.AmbientLight(0xFFF6EA, 1.4);
+    const ambientLight = new THREE.AmbientLight(0xFFF6EA, 1.2);
     scene.add(ambientLight);
 
     // Key Light (Warm golden specular highlight)
@@ -218,17 +476,97 @@ export default function FloatingRing() {
     fillLight.position.set(-6, -4, 4);
     scene.add(fillLight);
 
-    // Diamond Sparkle Point Lights
-    const pointLightTop = new THREE.PointLight(0xFFFFFF, 2.5, 12);
-    pointLightTop.position.set(0, 4, 3);
+    // Top Sparkle Point Light directly illuminating diamond tables
+    const pointLightTop = new THREE.PointLight(0xFFFFFF, 3.5, 14);
+    pointLightTop.position.set(0, 3.8, 4.2);
     scene.add(pointLightTop);
 
+    // Subtle Rim Light
     const rimLightBack = new THREE.DirectionalLight(0xC5A16B, 2.0);
     rimLightBack.position.set(0, -6, -5);
     scene.add(rimLightBack);
 
     // ================================================================
-    // ANIMATION LOOP (Gentle, romantic slow motion)
+    // INTERACTIVE TOUCH & MOUSE DRAG-TO-INSPECT SYSTEM
+    // ================================================================
+    let isDragging = false;
+    let prevPointerX = 0;
+    let prevPointerY = 0;
+    let velocityX = 0;
+    let velocityY = 0;
+    let targetRotationY = 0;
+    let targetRotationX = 0.06;
+
+    const onPointerDown = (clientX, clientY) => {
+      isDragging = true;
+      setIsUserInteracting(true);
+      prevPointerX = clientX;
+      prevPointerY = clientY;
+      velocityX = 0;
+      velocityY = 0;
+    };
+
+    const onPointerMove = (clientX, clientY) => {
+      if (!isDragging) return;
+      const deltaX = clientX - prevPointerX;
+      const deltaY = clientY - prevPointerY;
+      prevPointerX = clientX;
+      prevPointerY = clientY;
+
+      velocityX = deltaX * 0.007;
+      velocityY = deltaY * 0.007;
+
+      targetRotationY += velocityX;
+      targetRotationX += velocityY;
+
+      // Constrain vertical pitch to prevent unnatural upside-down flipping
+      targetRotationX = Math.max(-0.45, Math.min(0.55, targetRotationX));
+    };
+
+    const onPointerUp = () => {
+      isDragging = false;
+      setTimeout(() => {
+        setIsUserInteracting(false);
+      }, 1800);
+    };
+
+    // Mouse Listeners
+    const handleMouseDown = (e) => {
+      onPointerDown(e.clientX, e.clientY);
+    };
+    const handleMouseMove = (e) => {
+      onPointerMove(e.clientX, e.clientY);
+    };
+    const handleMouseUp = () => {
+      onPointerUp();
+    };
+
+    // Touch Listeners (Mobile Viewports)
+    const handleTouchStart = (e) => {
+      if (e.touches.length === 1) {
+        onPointerDown(e.touches[0].clientX, e.touches[0].clientY);
+      }
+    };
+    const handleTouchMove = (e) => {
+      if (e.touches.length === 1) {
+        onPointerMove(e.touches[0].clientX, e.touches[0].clientY);
+      }
+    };
+    const handleTouchEnd = () => {
+      onPointerUp();
+    };
+
+    const domElement = renderer.domElement;
+    domElement.addEventListener('mousedown', handleMouseDown);
+    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mouseup', handleMouseUp);
+
+    domElement.addEventListener('touchstart', handleTouchStart, { passive: true });
+    window.addEventListener('touchmove', handleTouchMove, { passive: true });
+    window.addEventListener('touchend', handleTouchEnd);
+
+    // ================================================================
+    // ANIMATION LOOP (Romantic Rotation with Inertia & Floating)
     // ================================================================
     let animId;
     const clock = new THREE.Clock();
@@ -239,16 +577,27 @@ export default function FloatingRing() {
 
       const elapsed = clock.getElapsedTime();
 
-      // Slow, romantic 3D rotation with natural angle change
-      ringsMasterGroup.rotation.y = elapsed * 0.18;
-      ringsMasterGroup.rotation.x = Math.sin(elapsed * 0.45) * 0.08 + 0.05;
-      ringsMasterGroup.rotation.z = Math.cos(elapsed * 0.35) * 0.04;
+      if (!isDragging) {
+        // Slow romantic auto-rotation resume
+        targetRotationY += 0.0035;
+
+        // Apply gentle inertia damping
+        velocityX *= 0.92;
+        velocityY *= 0.92;
+        targetRotationY += velocityX;
+        targetRotationX += velocityY;
+      }
+
+      // Smooth interpolation to target rotation
+      ringsMasterGroup.rotation.y += (targetRotationY - ringsMasterGroup.rotation.y) * 0.12;
+      ringsMasterGroup.rotation.x += (targetRotationX - ringsMasterGroup.rotation.x) * 0.12;
+      ringsMasterGroup.rotation.z = Math.cos(elapsed * 0.35) * 0.035;
 
       // Subtle breathing float movement
-      ringsMasterGroup.position.y = Math.sin(elapsed * 0.9) * 0.08;
+      ringsMasterGroup.position.y = Math.sin(elapsed * 0.85) * 0.07;
 
       // Gentle counter-rocking for Ring 2 to create subtle natural depth
-      ring2Group.rotation.z = Math.sin(elapsed * 0.6) * 0.05;
+      ring2Group.rotation.z = -Math.PI * 0.06 + Math.sin(elapsed * 0.5) * 0.03;
 
       renderer.render(scene, camera);
     };
@@ -258,7 +607,7 @@ export default function FloatingRing() {
     // Resize Handler
     const handleResize = () => {
       if (!container || !renderer) return;
-      const newWidth = container.clientWidth || 340;
+      const newWidth = container.clientWidth || 360;
       camera.aspect = newWidth / height;
       camera.updateProjectionMatrix();
       renderer.setSize(newWidth, height);
@@ -271,13 +620,19 @@ export default function FloatingRing() {
       window.removeEventListener('resize', handleResize);
       cancelAnimationFrame(animId);
 
-      band1Geo.dispose();
-      band2Geo.dispose();
-      waveGeo1.dispose();
-      bezelGeo1.dispose();
-      paveGeo.dispose();
+      domElement.removeEventListener('mousedown', handleMouseDown);
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleMouseUp);
+
+      domElement.removeEventListener('touchstart', handleTouchStart);
+      window.removeEventListener('touchmove', handleTouchMove);
+      window.removeEventListener('touchend', handleTouchEnd);
+
+      geometriesToDispose.forEach((geo) => geo.dispose());
       goldMaterial.dispose();
       diamondMaterial.dispose();
+      if (envTexture) envTexture.dispose();
+      if (pmremGenerator) pmremGenerator.dispose();
 
       if (renderer) {
         renderer.dispose();
@@ -286,7 +641,7 @@ export default function FloatingRing() {
         }
       }
     };
-  }, [isInView, viewMode]);
+  }, [isInView]);
 
   return (
     <section className="relative py-14 sm:py-20 bg-gradient-to-b from-[#1C1613] via-[#2A201A] to-[#1C1613] text-[#FAF6EF] overflow-hidden select-none">
@@ -313,96 +668,39 @@ export default function FloatingRing() {
           {ringsConfig.heading}
         </h3>
 
-        <OrnamentalDivider className="max-w-[160px] mx-auto text-[#C5A16B] mb-4" />
+        <OrnamentalDivider className="max-w-[160px] mx-auto text-[#C5A16B] mb-5" />
 
-        {/* View Toggle: Interactive 3D Model vs Authentic Reference Photo */}
-        <div className="flex items-center justify-center gap-2 mb-4">
-          <button
-            type="button"
-            onClick={() => setViewMode('3d')}
-            className={`px-3.5 py-1.5 rounded-full text-xs font-sans uppercase tracking-wider font-semibold transition-all flex items-center gap-1.5 cursor-pointer ${
-              viewMode === '3d'
-                ? 'bg-[#C5A16B] text-[#1C1613] shadow-md font-bold'
-                : 'bg-white/10 text-[#EAD9B8] hover:bg-white/15'
-            }`}
-          >
-            <RotateCw className="w-3.5 h-3.5" />
-            <span>Interactive 3D Rings</span>
-          </button>
+        {/* Main 3D Presentation Stage */}
+        <div className="relative w-full max-w-[380px] h-[320px] mx-auto rounded-3xl bg-[#140F0D]/85 border border-[#C5A16B]/40 shadow-2xl flex items-center justify-center overflow-hidden">
+          {webglSupported ? (
+            <div
+              ref={mountRef}
+              className="w-full h-full flex items-center justify-center cursor-grab active:cursor-grabbing touch-none select-none"
+              title="Drag horizontally or vertically to rotate and inspect the wedding rings"
+            />
+          ) : (
+            /* Graceful Non-WebGL Fallback */
+            <div className="w-full h-full flex flex-col items-center justify-center p-6 text-center">
+              <Sparkles className="w-8 h-8 text-[#C5A16B] mb-2 animate-pulse" />
+              <p className="font-serif text-sm text-[#EAD9B8]">
+                Sahana & Sameep Wedding Rings
+              </p>
+            </div>
+          )}
 
-          <button
-            type="button"
-            onClick={() => setViewMode('photo')}
-            className={`px-3.5 py-1.5 rounded-full text-xs font-sans uppercase tracking-wider font-semibold transition-all flex items-center gap-1.5 cursor-pointer ${
-              viewMode === 'photo'
-                ? 'bg-[#C5A16B] text-[#1C1613] shadow-md font-bold'
-                : 'bg-white/10 text-[#EAD9B8] hover:bg-white/15'
-            }`}
-          >
-            <Eye className="w-3.5 h-3.5" />
-            <span>Original Photograph</span>
-          </button>
-        </div>
-
-        {/* Main Presentation Stage */}
-        <div className="relative w-full max-w-[380px] h-[300px] mx-auto rounded-3xl bg-[#140F0D]/80 border border-[#C5A16B]/40 shadow-2xl flex items-center justify-center overflow-hidden">
-          <AnimatePresence mode="wait">
-            {viewMode === '3d' ? (
-              <motion.div
-                key="3d-view"
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.95 }}
-                transition={{ duration: 0.4 }}
-                className="w-full h-full relative flex items-center justify-center"
-              >
-                {webglSupported ? (
-                  <div
-                    ref={mountRef}
-                    className="w-full h-full flex items-center justify-center cursor-grab active:cursor-grabbing"
-                    title="Interactive 3D Wedding Rings — Drag or observe slow rotation"
-                  />
-                ) : (
-                  /* Non-WebGL Fallback */
-                  <img
-                    src={ringsConfig.image}
-                    alt="Sahana & Sameep Original Wedding Rings"
-                    className="w-full h-full object-cover"
-                  />
-                )}
-
-                {/* Subtle Instruction Badge */}
-                <div className="absolute bottom-2.5 inset-x-0 flex items-center justify-center pointer-events-none">
-                  <div className="flex items-center gap-1 px-3 py-1 rounded-full bg-black/60 backdrop-blur-xs border border-[#C5A16B]/30 text-[10px] font-sans text-[#EAD9B8] tracking-widest uppercase">
-                    <Sparkles className="w-3 h-3 text-[#C5A16B] animate-pulse" />
-                    <span>Exact Custom Ring Design</span>
-                  </div>
-                </div>
-              </motion.div>
-            ) : (
-              /* Authentic Reference Photograph View */
-              <motion.div
-                key="photo-view"
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.95 }}
-                transition={{ duration: 0.4 }}
-                className="w-full h-full relative"
-              >
-                <img
-                  src={ringsConfig.image}
-                  alt="Sahana & Sameep Wedding Rings Reference Photograph"
-                  className="w-full h-full object-cover"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/20 pointer-events-none" />
-                <div className="absolute bottom-3 inset-x-0 text-center">
-                  <span className="font-serif italic text-xs text-[#EAD9B8]">
-                    Official Wedding Jewellery Reference
-                  </span>
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
+          {/* Interactive Inspection Badge */}
+          <div className="absolute bottom-3 inset-x-0 flex items-center justify-center pointer-events-none transition-opacity duration-300">
+            <div
+              className={`flex items-center gap-1.5 px-3.5 py-1 rounded-full backdrop-blur-md border text-[10px] font-sans tracking-widest uppercase transition-all duration-300 ${
+                isUserInteracting
+                  ? 'bg-[#C5A16B]/25 border-[#C5A16B] text-[#FFF6E5]'
+                  : 'bg-black/60 border-[#C5A16B]/30 text-[#EAD9B8]'
+              }`}
+            >
+              <Move3d className="w-3 h-3 text-[#C5A16B] animate-pulse" />
+              <span>{isUserInteracting ? 'Inspecting In 3D' : 'Drag to Rotate in 3D'}</span>
+            </div>
+          </div>
         </div>
 
         {/* Romantic Supporting Quote */}
