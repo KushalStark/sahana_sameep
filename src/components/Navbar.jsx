@@ -26,7 +26,7 @@ export default function Navbar({
 
   const navLinks = [
     { label: 'Home', href: '#home' },
-    { label: 'ಆಮಂತ್ರಣ (Patrika)', href: '#kannada-invitation' },
+    { label: 'ಆಮಂತ್ರಣ (Patrika)', isKannada: true, href: '#kannada-invitation' },
     { label: 'Our Story', href: '#story' },
     { label: 'Events', href: '#events' },
     { label: 'Gallery', href: '#gallery' },
@@ -88,7 +88,9 @@ export default function Navbar({
                   key={link.label}
                   href={link.href}
                   onClick={(e) => handleNavClick(e, link.href)}
-                  className={`text-xs uppercase tracking-[0.2em] font-sans font-semibold transition-all relative py-1 ${
+                  className={`text-xs ${
+                    link.isKannada ? 'font-kannada tracking-normal font-bold' : 'font-sans uppercase tracking-[0.2em] font-semibold'
+                  } transition-all relative py-1 ${
                     isActive
                       ? isScrolled
                         ? 'text-gold-dark'
@@ -202,7 +204,11 @@ export default function Navbar({
                     key={link.label}
                     href={link.href}
                     onClick={(e) => handleNavClick(e, link.href)}
-                    className={`w-full py-2.5 text-center text-xs uppercase tracking-[0.25em] font-sans font-medium rounded-xl transition-colors ${
+                    className={`w-full py-2.5 text-center text-xs ${
+                      link.isKannada
+                        ? 'font-kannada tracking-normal font-bold'
+                        : 'font-sans uppercase tracking-[0.25em] font-medium'
+                    } rounded-xl transition-colors ${
                       isActive
                         ? 'bg-gold/15 text-gold-dark font-semibold'
                         : 'text-charcoal hover:bg-ivory-100 hover:text-gold-dark'

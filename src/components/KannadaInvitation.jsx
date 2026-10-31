@@ -144,7 +144,7 @@ export default function KannadaInvitation() {
                   {kannadaInvitation.venueValue}
                 </span>
                 <span className="font-kannada text-xs text-[#786C63] block mt-0.5">
-                  {kannadaInvitation.locationLabel}: {kannadaInvitation.locationValue}
+                  {kannadaInvitation.locationValue}
                 </span>
               </div>
             </div>

@@ -87,7 +87,16 @@ export default function Venue({ venue }) {
           </div>
 
           {/* Interactive Map Embed */}
-          <div className="relative h-48 rounded-2xl overflow-hidden border border-gold/30 shadow-inner">
+          <div className="relative h-48 rounded-2xl overflow-hidden border border-gold/30 shadow-inner bg-[#EFE9DD] flex items-center justify-center">
+            <div className="absolute inset-0 flex flex-col items-center justify-center text-[#786C63] p-4 text-center pointer-events-none">
+              <MapPin className="w-6 h-6 text-gold-dark mb-1 opacity-70" />
+              <span className="font-serif text-xs font-semibold text-charcoal-deep">
+                {venue.nameKannada || "ವಿಶ್ವಮಾನವ ಸಭಾಭವನ"}
+              </span>
+              <span className="text-[10px] font-sans text-charcoal-light">
+                {venue.locality || "Sagara Road, Ripponpete"}
+              </span>
+            </div>
             <iframe
               title="Vishwa Maanava Sabha Bhavana Venue Map"
               src={venue.embedMapUrl}
@@ -97,7 +106,7 @@ export default function Venue({ venue }) {
               allowFullScreen=""
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
-              className="w-full h-full grayscale-[15%]"
+              className="w-full h-full relative z-10 grayscale-[15%]"
             />
           </div>
 

@@ -13,7 +13,7 @@ export default function TravelStay({ travel }) {
   if (!travel || !travel.enabled) return null;
 
   return (
-    <section className="relative py-16 sm:py-24 bg-[#F6F0E6] overflow-hidden select-none">
+    <section id="travel" className="relative py-16 sm:py-24 bg-[#F6F0E6] overflow-hidden select-none">
       <div className="w-full max-w-6xl mx-auto px-4 sm:px-6 relative z-10">
         {/* Section Header */}
         <div className="text-center mb-12">

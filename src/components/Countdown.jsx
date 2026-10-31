@@ -74,7 +74,7 @@ export default function Countdown({
   ];
 
   return (
-    <section className="relative py-16 sm:py-24 bg-[#FAF6EF] overflow-hidden select-none">
+    <section id="countdown" className="relative py-16 sm:py-24 bg-[#FAF6EF] overflow-hidden select-none">
       <div className="w-full max-w-2xl mx-auto px-4 sm:px-6 relative z-10 text-center">
         {/* Arch Flourish & Header */}
         <div className="flex justify-center mb-1">

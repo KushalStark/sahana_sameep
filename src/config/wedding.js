@@ -163,8 +163,8 @@ export const weddingConfig = {
     items: [
       {
         id: 1,
-        title: "Golden Hour Glow",
-        description: "Sunset promises and quiet smiles",
+        title: "Golden Hour Together",
+        description: "Smiles that light up every tomorrow",
         src: "/images/gallery-1.jpg",
         orientation: "landscape"
       },
@@ -177,31 +177,53 @@ export const weddingConfig = {
       },
       {
         id: 3,
-        title: "Under the Floral Canopy",
-        description: "Surrounded by blooms and blessings",
+        title: "Where It All Began",
+        description: "Two childhood smiles on their journey to forever",
         src: "/images/gallery-3.jpg",
         orientation: "square"
       },
       {
         id: 4,
-        title: "Stolen Glances",
-        description: "Laughing at inside jokes during our pre-wedding walk",
+        title: "Our Wedding Rings",
+        description: "Faceted diamonds and warm polished gold, our sacred circle of love",
         src: "/images/gallery-4.jpg",
         orientation: "portrait"
       },
       {
         id: 5,
-        title: "By the Mountain Lake",
-        description: "Where Sameep asked, and Sahana said forever",
+        title: "The Groom: Sameep",
+        description: "Looking forward to the greatest adventure of life",
         src: "/images/gallery-5.jpg",
         orientation: "landscape"
       },
       {
         id: 6,
-        title: "Traditional Splendor",
-        description: "Silk, gold, and festive celebration",
+        title: "The Bride: Sahana",
+        description: "Traditional elegance and timeless grace",
         src: "/images/gallery-6.jpg",
         orientation: "portrait"
+      }
+    ]
+  },
+
+  // Dress Code Guidance
+  dressCode: {
+    enabled: true,
+    title: "Attire & Dress Code",
+    subtitle: "Celebrate with us in traditional elegance",
+    events: [
+      {
+        id: "ceremony",
+        title: "Wedding Ceremony",
+        titleKannada: "ಮುಹೂರ್ತ ಸಮಾರಂಭ",
+        tag: "Traditional / Ethnic Attire",
+        description: "Silk Sarees, Dhotis, Kurta-Pyjamas & Festive Pastels",
+        palette: [
+          { name: "Festive Gold", hex: "#D4AF37" },
+          { name: "Kasturi Yellow", hex: "#E5BA42" },
+          { name: "Kumkum Crimson", hex: "#8B2628" },
+          { name: "Pastel Mint", hex: "#7E9F7A" },
+        ],
       }
     ]
   },

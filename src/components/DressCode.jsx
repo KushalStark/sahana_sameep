@@ -39,7 +39,7 @@ export default function DressCode({ dressCode }) {
   ];
 
   return (
-    <section className="relative py-16 sm:py-24 bg-[#FAF6EF] overflow-hidden select-none">
+    <section id="dress-code" className="relative py-16 sm:py-24 bg-[#FAF6EF] overflow-hidden select-none">
       <div className="w-full max-w-6xl mx-auto px-4 sm:px-6 relative z-10">
         {/* Section Header */}
         <div className="text-center mb-12">

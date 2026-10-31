@@ -76,7 +76,7 @@ export default function ShareModal({ isOpen, onClose, shareConfig, couple }) {
           <div className="flex flex-col items-center justify-center p-3 rounded-2xl bg-ivory-100/70 border border-gold/30 mb-4">
             <div className="w-36 h-36 rounded-xl overflow-hidden bg-white p-2 border border-gold/20 shadow-sm flex items-center justify-center">
               <img
-                src={qrImageUrl}
+                src="/images/venue-qr.svg"
                 alt="QR Code for Wedding Invitation"
                 className="w-full h-full object-contain"
               />

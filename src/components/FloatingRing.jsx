@@ -644,7 +644,7 @@ export default function FloatingRing() {
   }, [isInView]);
 
   return (
-    <section className="relative py-14 sm:py-20 bg-gradient-to-b from-[#1C1613] via-[#2A201A] to-[#1C1613] text-[#FAF6EF] overflow-hidden select-none">
+    <section id="rings" className="relative py-14 sm:py-20 bg-gradient-to-b from-[#1C1613] via-[#2A201A] to-[#1C1613] text-[#FAF6EF] overflow-hidden select-none">
       {/* Ambient Radial Spotlight on Jewellery */}
       <div
         className="absolute inset-0 pointer-events-none"
