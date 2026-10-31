@@ -17,9 +17,9 @@ export const weddingConfig = {
     coupleKannada: "ಸಹನ ಮತ್ತು ಸಮೀಪ್",
     monogram: "S & S",
     tagline: "Two hearts. One beautiful beginning.",
-    invitationSubtitle: "A celebration of love",
-    heroPrimaryAction: "Open Our Invitation",
-    heroSecondaryAction: "View Wedding Details",
+    invitationSubtitle: "A CELEBRATION OF LOVE",
+    heroPrimaryAction: "OPEN OUR INVITATION",
+    heroSecondaryAction: "VIEW WEDDING DETAILS",
   },
 
   // Official Wedding Date & Time
@@ -28,14 +28,14 @@ export const weddingConfig = {
   timeZone: "Asia/Kolkata",
   dateFormats: {
     hero: "MONDAY, 08 FEBRUARY 2027",
-    card: "MONDAY, 8 FEBRUARY 2027",
-    full: "Monday, 8 February 2027",
+    card: "MONDAY, 08 FEBRUARY 2027",
+    full: "Monday, 08 February 2027",
     standard: "08 February 2027",
     dotted: "08.02.2027",
-    kannada: "08-02-2027, ಸೋಮವಾರ",
+    kannada: "೦೮-೦೨-೨೦೨೭, ಸೋಮವಾರ",
   },
   muhurtha: "12:35 PM",
-  muhurthaKannada: "ಮಧ್ಯಾಹ್ನ 12:35",
+  muhurthaKannada: "ಮಧ್ಯಾಹ್ನ: ೧೨:೩೫",
 
   // Venue Information (as printed on invitation)
   venue: {
@@ -79,13 +79,13 @@ export const weddingConfig = {
     tagline: "ಶುಭ ವಿವಾಹ ಆಮಂತ್ರಣ ಪತ್ರಿಕೆ",
     couple: "ಸಹನ ಮತ್ತು ಸಮೀಪ್",
     dateLabel: "ದಿನಾಂಕ",
-    dateValue: "08-02-2027, ಸೋಮವಾರ",
+    dateValue: "೦೮-೦೨-೨೦೨೭, ಸೋಮವಾರ",
     muhurthaLabel: "ಮುಹೂರ್ತ",
-    muhurthaValue: "ಮಧ್ಯಾಹ್ನ 12:35",
+    muhurthaValue: "ಮಧ್ಯಾಹ್ನ: ೧೨:೩೫",
     venueLabel: "ವಿವಾಹ ಸ್ಥಳ",
     venueValue: "ವಿಶ್ವಮಾನವ ಸಭಾಭವನ",
     locationLabel: "ಸ್ಥಳ",
-    locationValue: "ಸಾಗರ ರಸ್ತೆ, ರಿಪ್ಪನ್‌ಪೇಟೆ",
+    locationValue: "ಸಾಗರ ರಸ್ತೆ, ರಿಪ್ಪನ್ ಪೇಟೆ",
     welcomeNote: "ತಾವೆಲ್ಲರೂ ಸಕುಟುಂಬ ಸಮೇತರಾಗಿ ಆಗಮಿಸಿ, ವಧು-ವರರನ್ನು ಹರಸಿ ಆಶೀರ್ವದಿಸಬೇಕಾಗಿ ವಿನಮ್ರ ಪ್ರಾರ್ಥನೆ.",
   },
 
@@ -97,10 +97,10 @@ export const weddingConfig = {
       title: "Wedding Ceremony",
       titleKannada: "ವಿವಾಹ ಮಹೋತ್ಸವ",
       type: "Sacred Muhurtha (ಮುಹೂರ್ತ)",
-      date: "Monday, 8 February 2027",
+      date: "Monday, 08 February 2027",
       dateShort: "08.02.2027",
       time: "Muhurtha: 12:35 PM",
-      timeKannada: "ಮುಹೂರ್ತ: ಮಧ್ಯಾಹ್ನ 12:35",
+      timeKannada: "ಮುಹೂರ್ತ: ಮಧ್ಯಾಹ್ನ: ೧೨:೩೫",
       venueName: "ವಿಶ್ವಮಾನವ ಸಭಾಭವನ",
       venueTransliteration: "Vishwamanava Sabhabhavana",
       address: "Sagara Road, Ripponpete",
@@ -210,16 +210,21 @@ export const weddingConfig = {
   familyNote: {
     heading: "THE FAMILIES BEHIND OUR CELEBRATION",
     subtitle: "Two families, one beautiful beginning.",
-    photo: "/images/family-portrait.jpg",
+    photo: "/images/full family.png",
+    fullFamilyPhoto: "/images/full family.png",
+    brideFamilyPhoto: "/images/bride.png",
+    groomFamilyPhoto: "/images/groom.png",
     brideFamily: {
-      title: "Bride's Family",
+      title: "THE BRIDE'S FAMILY",
       message: "With warm hearts and deep gratitude, we invite you to bless our daughter Sahana as she embarks on this magical new chapter of life with Sameep.",
-      names: "The Bride's Parents & Family"
+      names: "The Bride's Parents & Family",
+      photo: "/images/bride.png"
     },
     groomFamily: {
-      title: "Groom's Family",
+      title: "THE GROOM'S FAMILY",
       message: "Our family is overjoyed to welcome Sahana into our lives and to celebrate this union of love and friendship. We eagerly look forward to sharing this joy with you.",
-      names: "The Groom's Parents & Family"
+      names: "The Groom's Parents & Family",
+      photo: "/images/groom.png"
     }
   },
 

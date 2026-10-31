@@ -77,36 +77,36 @@ export default function VelvetCurtains({
         }}
         className="absolute inset-y-0 left-0 w-[52%] h-full shadow-[16px_0_40px_rgba(0,0,0,0.85)] z-20"
       >
-        {/* Velvet Fabric Folds & Pleat Texture */}
+        {/* Champagne-Gold Silk Fabric Folds & Pleat Texture */}
         <div
           className="absolute inset-0 w-full h-full"
           style={{
             background: `
-              radial-gradient(ellipse at 40% 30%, rgba(214, 55, 80, 0.25) 0%, transparent 60%),
-              radial-gradient(ellipse at 30% 75%, rgba(214, 55, 80, 0.2) 0%, transparent 60%),
+              radial-gradient(ellipse at 40% 30%, rgba(255, 235, 175, 0.25) 0%, transparent 60%),
+              radial-gradient(ellipse at 30% 75%, rgba(212, 175, 55, 0.2) 0%, transparent 60%),
               repeating-linear-gradient(
                 90deg,
-                #160205 0px,
-                #2A040A 12px,
-                #480812 24px,
-                #6B0E1D 36px,
-                #8E1627 46px,
-                #6B0E1D 56px,
-                #3B070F 68px,
-                #160205 80px
+                #140C07 0px,
+                #23160F 12px,
+                #3D2A1E 24px,
+                #6E4F32 36px,
+                #9E7544 46px,
+                #6E4F32 56px,
+                #352317 68px,
+                #140C07 80px
               )
             `,
             backgroundSize: '100% 100%, 100% 100%, 80px 100%',
           }}
         >
-          {/* Subtle Fabric Micro-Sheen Overlay */}
-          <div className="absolute inset-0 bg-gradient-to-r from-black/50 via-transparent to-black/40 pointer-events-none" />
+          {/* Subtle Silk Micro-Sheen Overlay */}
+          <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-transparent to-black/40 pointer-events-none" />
 
           {/* Vertical Shadow Waves for 3D Fabric Volume */}
           <div
             className="absolute inset-0 opacity-45 pointer-events-none"
             style={{
-              background: 'repeating-linear-gradient(90deg, transparent 0px, rgba(0,0,0,0.55) 35px, transparent 70px)',
+              background: 'repeating-linear-gradient(90deg, transparent 0px, rgba(0,0,0,0.65) 35px, transparent 70px)',
               backgroundSize: '140px 100%',
             }}
           />
@@ -151,36 +151,36 @@ export default function VelvetCurtains({
         }}
         className="absolute inset-y-0 right-0 w-[52%] h-full shadow-[-16px_0_40px_rgba(0,0,0,0.85)] z-20"
       >
-        {/* Velvet Fabric Folds & Pleat Texture (Mirrored) */}
+        {/* Champagne-Gold Silk Fabric Folds & Pleat Texture (Mirrored) */}
         <div
           className="absolute inset-0 w-full h-full"
           style={{
             background: `
-              radial-gradient(ellipse at 60% 30%, rgba(214, 55, 80, 0.25) 0%, transparent 60%),
-              radial-gradient(ellipse at 70% 75%, rgba(214, 55, 80, 0.2) 0%, transparent 60%),
+              radial-gradient(ellipse at 60% 30%, rgba(255, 235, 175, 0.25) 0%, transparent 60%),
+              radial-gradient(ellipse at 70% 75%, rgba(212, 175, 55, 0.2) 0%, transparent 60%),
               repeating-linear-gradient(
                 90deg,
-                #160205 0px,
-                #3B070F 12px,
-                #6B0E1D 24px,
-                #8E1627 34px,
-                #6B0E1D 44px,
-                #480812 56px,
-                #2A040A 68px,
-                #160205 80px
+                #140C07 0px,
+                #352317 12px,
+                #6E4F32 24px,
+                #9E7544 34px,
+                #6E4F32 44px,
+                #3D2A1E 56px,
+                #23160F 68px,
+                #140C07 80px
               )
             `,
             backgroundSize: '100% 100%, 100% 100%, 80px 100%',
           }}
         >
-          {/* Subtle Fabric Micro-Sheen Overlay */}
-          <div className="absolute inset-0 bg-gradient-to-l from-black/50 via-transparent to-black/40 pointer-events-none" />
+          {/* Subtle Silk Micro-Sheen Overlay */}
+          <div className="absolute inset-0 bg-gradient-to-l from-black/60 via-transparent to-black/40 pointer-events-none" />
 
           {/* Vertical Shadow Waves for 3D Fabric Volume */}
           <div
             className="absolute inset-0 opacity-45 pointer-events-none"
             style={{
-              background: 'repeating-linear-gradient(90deg, transparent 0px, rgba(0,0,0,0.55) 35px, transparent 70px)',
+              background: 'repeating-linear-gradient(90deg, transparent 0px, rgba(0,0,0,0.65) 35px, transparent 70px)',
               backgroundSize: '140px 100%',
             }}
           />
@@ -342,10 +342,10 @@ export default function VelvetCurtains({
           >
             <defs>
               <linearGradient id="pelmetVelvetGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-                <stop offset="0%" stopColor="#3B050E" />
-                <stop offset="30%" stopColor="#680D1C" />
-                <stop offset="65%" stopColor="#821425" />
-                <stop offset="100%" stopColor="#280308" />
+                <stop offset="0%" stopColor="#1E140C" />
+                <stop offset="30%" stopColor="#3E2A1C" />
+                <stop offset="65%" stopColor="#5E422C" />
+                <stop offset="100%" stopColor="#1A120B" />
               </linearGradient>
               <linearGradient id="pelmetGoldTrimGrad" x1="0%" y1="0%" x2="100%" y2="0%">
                 <stop offset="0%" stopColor="#8C632F" />
@@ -357,7 +357,7 @@ export default function VelvetCurtains({
             </defs>
 
             {/* Horizontal Top Pelmet Bar */}
-            <rect x="0" y="0" width="800" height="24" fill="#1C0205" />
+            <rect x="0" y="0" width="800" height="24" fill="#140C07" />
             <rect x="0" y="22" width="800" height="3" fill="url(#pelmetGoldTrimGrad)" />
 
             {/* 5 Scalloped Velvet Swag Festoons across width */}
@@ -420,7 +420,7 @@ export default function VelvetCurtains({
 
         {/* Center Royal Stage Medallion */}
         <div className="absolute top-1 sm:top-2 left-1/2 -translate-x-1/2 flex items-center justify-center">
-          <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-gradient-to-b from-[#2E050B] to-[#120204] border-2 border-[#D4AF37] shadow-xl flex items-center justify-center p-1">
+          <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-gradient-to-b from-[#2C1E14] to-[#120B06] border-2 border-[#D4AF37] shadow-xl flex items-center justify-center p-1">
             <LotusMotif className="w-4 h-4 text-[#EAD9B8]" strokeWidth={1.4} />
           </div>
         </div>

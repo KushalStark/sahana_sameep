@@ -162,8 +162,8 @@ export default function App() {
           <Countdown
             targetDate={weddingConfig.weddingDate}
             timeZone={weddingConfig.timeZone}
-            subtitle={weddingConfig.countdownSubtitle}
-            quote={weddingConfig.countdownQuote}
+            subtitle={weddingConfig.countdown?.subtitle}
+            quote={weddingConfig.countdown?.quote}
           />
 
           {/* Section 10: Venue & Directions with High-Resolution Lightbox */}

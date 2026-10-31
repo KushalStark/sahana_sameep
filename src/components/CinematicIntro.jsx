@@ -527,7 +527,7 @@ export default function CinematicIntro({
               animate={
                 isCardEmerging
                   ? {
-                      y: -190,
+                      y: -215,
                       scale: 1,
                       rotateX: 0,
                       transition: {
@@ -546,7 +546,7 @@ export default function CinematicIntro({
                       },
                     }
               }
-              className="absolute inset-x-2 top-2 h-[410px] sm:h-[420px] rounded-2xl pointer-events-auto [perspective:1400px]"
+              className="absolute inset-x-2 top-2 h-[400px] sm:h-[415px] rounded-2xl pointer-events-auto [perspective:1400px]"
               style={{
                 transformOrigin: 'bottom center',
                 willChange: 'transform',
@@ -568,7 +568,7 @@ export default function CinematicIntro({
                     FRONT FACE: ROYAL ENGLISH INVITATION
                     ==================================================== */}
                 <div
-                  className="absolute inset-0 w-full h-full bg-[#FFFDF8] rounded-2xl border-2 border-[#C5A16B] shadow-2xl p-4 flex flex-col justify-between text-center text-[#352C28] overflow-hidden"
+                  className="absolute inset-0 w-full h-full bg-[#FFFDF8] rounded-2xl border-2 border-[#C5A16B] shadow-2xl p-3.5 sm:p-4 flex flex-col justify-between text-center text-[#352C28] overflow-hidden"
                   style={{
                     backfaceVisibility: 'hidden',
                     WebkitBackfaceVisibility: 'hidden',
@@ -610,18 +610,18 @@ export default function CinematicIntro({
                   </div>
 
                   {/* Date & Venue Pill Box */}
-                  <div className="bg-[#FAF4E8] rounded-xl border border-[#C5A16B]/40 p-2.5 space-y-1.5 text-left text-xs">
+                  <div className="bg-[#FAF4E8] rounded-xl border border-[#C5A16B]/40 p-2 sm:p-2.5 space-y-1 text-left text-xs">
                     <div className="flex items-center gap-2 text-[#352C28]">
                       <Calendar className="w-3.5 h-3.5 text-[#A67C45] shrink-0" />
-                      <span className="font-semibold">Thursday, May 07, 2026</span>
+                      <span className="font-semibold text-[11px] sm:text-xs">Monday, 08 February 2027</span>
                     </div>
-                    <div className="flex items-center gap-2 text-[#5C4D44] text-[11px]">
+                    <div className="flex items-center gap-2 text-[#5C4D44] text-[10.5px] sm:text-[11px]">
                       <Clock className="w-3.5 h-3.5 text-[#A67C45] shrink-0" />
-                      <span>Muhurtham: 09:15 AM – 10:15 AM</span>
+                      <span>Muhurtha: 12:35 PM</span>
                     </div>
-                    <div className="flex items-start gap-2 text-[#5C4D44] text-[11px]">
+                    <div className="flex items-start gap-2 text-[#5C4D44] text-[10.5px] sm:text-[11px]">
                       <MapPin className="w-3.5 h-3.5 text-[#A67C45] shrink-0 mt-0.5" />
-                      <span className="leading-tight">Vishwa Manava Seva Bhavana, Bengaluru</span>
+                      <span className="leading-tight">Vishwamanava Sabhabhavana, Sagara Road, Ripponpete</span>
                     </div>
                   </div>
 
@@ -694,13 +694,13 @@ export default function CinematicIntro({
                   {/* Kannada Event Details */}
                   <div className="bg-[#FAF4E8] rounded-xl border border-[#C5A16B]/40 p-2.5 space-y-1 text-left font-kannada text-xs">
                     <p className="font-semibold text-[#352C28]">
-                      ತಾ: 07-05-2026, ಗುರುವಾರ
+                      ದಿನಾಂಕ: ೦೮-೦೨-೨೦೨೭, ಸೋಮವಾರ
                     </p>
                     <p className="text-[#5C4D44] text-[11px]">
-                      ಮುಹೂರ್ತ: ಬೆಳಿಗ್ಗೆ 9:15 ರಿಂದ 10:15 ರವರೆಗೆ
+                      ಮುಹೂರ್ತ: ಮಧ್ಯಾಹ್ನ: ೧೨:೩೫
                     </p>
                     <p className="text-[#5C4D44] text-[11px] leading-tight">
-                      ಸ್ಥಳ: ವಿಶ್ವ ಮಾನವ ಸೇವಾ ಭವನ, ಒಕ್ಕಲಿಗರ ಸಂಘ, ಆಸ್ಟಿನ್ ಟೌನ್, ಬೆಂಗಳೂರು
+                      ಸ್ಥಳ: ವಿಶ್ವಮಾನವ ಸಭಾಭವನ, ಸಾಗರ ರಸ್ತೆ, ರಿಪ್ಪನ್ ಪೇಟೆ
                     </p>
                   </div>
 
@@ -898,7 +898,7 @@ export default function CinematicIntro({
           className="mt-3 flex flex-col items-center text-center pointer-events-none"
         >
           <p className="font-serif text-[10.5px] text-[#EAD9B8] tracking-widest uppercase">
-            May 07, 2026 • Vishwa Manava Seva Bhavana, Bengaluru
+            08 February 2027 • Vishwamanava Sabhabhavana, Sagara Road, Ripponpete
           </p>
         </motion.div>
 
