@@ -4,24 +4,31 @@ import confetti from 'canvas-confetti';
 import { ArrowRight, RotateCw, Sparkles, MapPin, Calendar, Clock, Navigation } from 'lucide-react';
 import SSMonogram from '../assets/SSMonogram';
 import { CornerFlourish, LotusMotif, OrnamentalDivider, GaneshaMotif } from '../assets/BotanicalElements';
+import VelvetCurtains from './VelvetCurtains';
 import { weddingAudio } from '../utils/audioSynth';
 import { formatGuestGreeting } from '../utils/guestPersonalization';
 
 /**
  * ====================================================================
- * CINEMATIC WEDDING REVEAL INTRO — SAHANA & SAMEEP
+ * CINEMATIC WEDDING STAGE INTRO — SAHANA & SAMEEP
  * ====================================================================
- * Grand physical 3D ivory-and-gold envelope with 5-second grace period:
- * - Sealed envelope displayed on landing with custom gold S&S wax seal
- * - Attractive guest welcome: "WITH LOVE, WE WELCOME" + large guest name
- * - "YOU HAVE A SPECIAL INVITATION" pill above envelope
- * - "Tap the golden seal to open" instruction with 5s countdown timer
- * - Tap immediately cancels timer & opens envelope; otherwise auto-opens after 5s
- * - Flap physically rotates open around top hinge (-180deg)
- * - Invitation emerges vertically out of pocket in 3D
- * - 3D Flip Card: English Front & Kannada Back (ಸಹನ ಮತ್ತು ಸಮೀಪ್)
- * - "DISCOVER OUR WEDDING" button with "Explore our celebration..."
- * - Golden curtain transition on enter website
+ * Grand Royal Indian Wedding Stage Experience:
+ * - Full-screen deep wine-burgundy velvet curtains with vertical pleats
+ * - Gold embroidered lace leading borders & braided bullion tassel tiebacks
+ * - Traditional Indian stage pelmet (scalloped valance) across top
+ * - Warm golden backlight leakage pulsing from center stage
+ * - Curtains slide gracefully apart (2.2s) and gather at the sides,
+ *   elegantly framing the invitation stage without disappearing
+ * - Unified stage composition:
+ *   1. Custom S&S Monogram & Wedding Branding
+ *   2. Floating Ivory Welcome Plaque with personalized guest name
+ *   3. "YOU HAVE A SPECIAL INVITATION" gold badge
+ *   4. Physical 3D Ivory Envelope with S&S Gold Wax Seal
+ *   5. "Tap the golden seal to open" with 5s countdown timer
+ *   6. Realistic 3D opening: seal breaks, flap rotates, card emerges
+ *   7. 3D Flip Card: English Front & Kannada Back (ಸಹನ ಮತ್ತು ಸಮೀಪ್)
+ *   8. "DISCOVER OUR WEDDING" button triggering velvet curtain close
+ * - Mobile-first layout designed for 320px–430px viewports (100svh)
  */
 export default function CinematicIntro({
   wedding,
@@ -30,7 +37,11 @@ export default function CinematicIntro({
 }) {
   const prefersReducedMotion = useReducedMotion();
 
-  // Stages: 'SEALED' | 'SEAL_BREAK' | 'FLAP_OPEN' | 'EMERGING' | 'REVEALED' | 'CURTAIN_TRANSITION'
+  // Curtains state: open/closed & transition
+  const [curtainsOpen, setCurtainsOpen] = useState(false);
+  const [isTransitioning, setIsTransitioning] = useState(false);
+
+  // Envelope Stages: 'SEALED' | 'SEAL_BREAK' | 'FLAP_OPEN' | 'EMERGING' | 'REVEALED'
   const [stage, setStage] = useState('SEALED');
   const [countdownSeconds, setCountdownSeconds] = useState(5);
   const [isCardFlipped, setIsCardFlipped] = useState(false);
@@ -60,15 +71,21 @@ export default function CinematicIntro({
   }, []);
 
   // ==================================================================
-  // 5-SECOND CONTROLLED COUNTDOWN GRACE PERIOD
+  // CINEMATIC CURTAIN OPENING & 5-SECOND COUNTDOWN SEQUENCE
   // ==================================================================
   useEffect(() => {
     if (prefersReducedMotion) {
+      setCurtainsOpen(true);
       setStage('REVEALED');
       return;
     }
 
-    // 1-second interval to update visual countdown badge
+    // Step 1: Curtains begin separating after a brief dramatic pause (450ms)
+    const curtainTimer = setTimeout(() => {
+      setCurtainsOpen(true);
+    }, 450);
+
+    // Step 2: 5-second countdown timer starts as curtains begin opening
     countdownIntervalRef.current = setInterval(() => {
       setCountdownSeconds((prev) => {
         if (prev <= 1) {
@@ -79,22 +96,25 @@ export default function CinematicIntro({
       });
     }, 1000);
 
-    // 5-second automatic opening timer
+    // Step 3: Automatic opening sequence fires if no interaction within 5.5s
     timerRef.current = setTimeout(() => {
       handleOpenSequence();
-    }, 5000);
+    }, 5500);
 
-    return () => clearAllTimers();
+    return () => {
+      clearTimeout(curtainTimer);
+      clearAllTimers();
+    };
   }, [prefersReducedMotion]);
 
   // Golden particle burst when seal detaches
   const triggerSealParticles = () => {
     try {
       confetti({
-        particleCount: 40,
-        spread: 55,
-        origin: { x: 0.5, y: 0.44 },
-        colors: ['#D4AF37', '#E5CCA0', '#F7E8CE', '#A67C45', '#FFFDF8'],
+        particleCount: 45,
+        spread: 60,
+        origin: { x: 0.5, y: 0.48 },
+        colors: ['#D4AF37', '#FFE8A3', '#F7E8CE', '#A67C45', '#FFFDF8'],
         disableForReducedMotion: true,
         ticks: 150,
         gravity: 0.85,
@@ -107,10 +127,10 @@ export default function CinematicIntro({
   const triggerSettledParticles = () => {
     try {
       confetti({
-        particleCount: 50,
-        spread: 70,
-        origin: { x: 0.5, y: 0.35 },
-        colors: ['#D4AF37', '#E5CCA0', '#F7E8CE', '#C5A16B'],
+        particleCount: 55,
+        spread: 75,
+        origin: { x: 0.5, y: 0.38 },
+        colors: ['#D4AF37', '#FFE8A3', '#F7E8CE', '#C5A16B'],
         disableForReducedMotion: true,
         ticks: 180,
         gravity: 0.65,
@@ -164,14 +184,14 @@ export default function CinematicIntro({
   };
 
   // ==================================================================
-  // GOLDEN CURTAIN TRANSITION INTO MAIN WEBSITE
+  // VELVET CURTAIN CLOSE TRANSITION INTO MAIN WEBSITE
   // ==================================================================
   const handleDiscoverWedding = () => {
-    if (stage === 'CURTAIN_TRANSITION') return;
+    if (isTransitioning) return;
     clearAllTimers();
 
-    // Trigger golden curtain sweep
-    setStage('CURTAIN_TRANSITION');
+    // Trigger velvet curtains drawing closed
+    setIsTransitioning(true);
 
     try {
       weddingAudio.playNote(523.25, 0, 2.2, 0.08);
@@ -179,10 +199,10 @@ export default function CinematicIntro({
       setTimeout(() => weddingAudio.playNote(783.99, 0.3, 2.2, 0.06), 300);
     } catch (e) {}
 
-    // Complete transition after curtain animation
+    // Complete transition after curtains close
     setTimeout(() => {
       onComplete?.();
-    }, 1200);
+    }, 1250);
   };
 
   const handleSkip = () => {
@@ -190,46 +210,57 @@ export default function CinematicIntro({
     onComplete?.();
   };
 
-  const isFlapOpen = stage === 'FLAP_OPEN' || stage === 'EMERGING' || stage === 'REVEALED' || stage === 'CURTAIN_TRANSITION';
-  const isCardEmerging = stage === 'EMERGING' || stage === 'REVEALED' || stage === 'CURTAIN_TRANSITION';
-  const isCardSettled = stage === 'REVEALED' || stage === 'CURTAIN_TRANSITION';
+  const isFlapOpen = stage === 'FLAP_OPEN' || stage === 'EMERGING' || stage === 'REVEALED';
+  const isCardEmerging = stage === 'EMERGING' || stage === 'REVEALED';
+  const isCardSettled = stage === 'REVEALED';
   const isSealVisible = stage === 'SEALED' || stage === 'SEAL_BREAK';
 
-  // Ambient rose petals
-  const petals = [
-    { id: 1, left: '12%', delay: 0.1, duration: 7.5, size: 16 },
-    { id: 2, left: '32%', delay: 1.4, duration: 8.5, size: 18 },
-    { id: 3, left: '62%', delay: 0.6, duration: 7.0, size: 14 },
-    { id: 4, left: '82%', delay: 2.0, duration: 8.0, size: 19 },
-    { id: 5, left: '94%', delay: 1.0, duration: 9.0, size: 15 },
+  // Ambient floating golden dust particles
+  const goldDustParticles = [
+    { id: 1, left: '15%', delay: 0.2, duration: 8.5, size: 3.5 },
+    { id: 2, left: '28%', delay: 1.6, duration: 9.0, size: 4.5 },
+    { id: 3, left: '42%', delay: 0.8, duration: 7.8, size: 3.0 },
+    { id: 4, left: '58%', delay: 2.2, duration: 8.2, size: 4.0 },
+    { id: 5, left: '72%', delay: 1.2, duration: 9.5, size: 3.2 },
+    { id: 6, left: '85%', delay: 0.4, duration: 7.4, size: 4.2 },
+    { id: 7, left: '35%', delay: 2.8, duration: 8.8, size: 3.8 },
+    { id: 8, left: '65%', delay: 3.2, duration: 9.2, size: 4.8 },
   ];
 
   return (
     <div
-      className="fixed inset-0 z-50 w-full h-[100svh] min-h-[100svh] bg-[#140F0D] flex items-center justify-center overflow-hidden select-none"
+      className="fixed inset-0 z-50 w-full h-[100svh] min-h-[100svh] bg-[#140407] flex items-center justify-center overflow-hidden select-none"
       style={{ perspective: '1400px' }}
-      aria-label="Sahana and Sameep Wedding Invitation Reveal"
+      aria-label="Sahana and Sameep Wedding Invitation Stage"
     >
-      {/* Ambient Radial Vignette & Warm Candlelight */}
+      {/* ============================================================
+          WARM ROYAL STAGE BACKDROP & AMBIENT SPOTLIGHT
+          ============================================================ */}
       <div
         className="absolute inset-0 pointer-events-none"
         style={{
-          background: 'radial-gradient(ellipse at 50% 45%, rgba(88, 62, 42, 0.75) 0%, rgba(20, 15, 13, 0.98) 75%)',
+          background: `
+            radial-gradient(ellipse at 50% 46%, rgba(142, 22, 39, 0.42) 0%, rgba(58, 8, 16, 0.85) 55%, rgba(18, 3, 6, 0.98) 85%),
+            radial-gradient(circle at 50% 20%, rgba(255, 230, 160, 0.15) 0%, transparent 50%)
+          `,
         }}
       />
 
-      {/* Floating Rose Petals */}
+      {/* Subtle Indian Damask Jali Watermark Pattern */}
+      <div className="absolute inset-0 opacity-[0.07] bg-[radial-gradient(#D4AF37_1.2px,transparent_1.2px)] [background-size:24px_24px] pointer-events-none" />
+
+      {/* Soft Floating Golden Dust Particles */}
       {!prefersReducedMotion && (
         <div className="absolute inset-0 pointer-events-none z-10 overflow-hidden">
-          {petals.map((p) => (
+          {goldDustParticles.map((p) => (
             <motion.div
               key={p.id}
-              initial={{ y: -30, opacity: 0, rotate: 0 }}
+              initial={{ y: '105svh', opacity: 0, scale: 0.6 }}
               animate={{
-                y: '105svh',
-                opacity: [0, 0.75, 0.75, 0],
-                rotate: 240,
-                x: [0, 15, -15, 8],
+                y: '-10svh',
+                opacity: [0, 0.85, 0.85, 0],
+                scale: [0.6, 1.2, 0.8],
+                x: [0, 12, -12, 6],
               }}
               transition={{
                 duration: p.duration,
@@ -240,10 +271,10 @@ export default function CinematicIntro({
               style={{
                 left: p.left,
                 width: p.size,
-                height: p.size * 1.3,
-                borderRadius: '60% 40% 60% 0%',
-                background: 'linear-gradient(135deg, #F5CDC7 0%, #E2938B 60%, #B84E44 100%)',
-                boxShadow: '0 2px 8px rgba(184, 78, 68, 0.3)',
+                height: p.size,
+                borderRadius: '50%',
+                background: 'radial-gradient(circle, #FFF6DA 0%, #D4AF37 60%, rgba(212,175,55,0) 100%)',
+                boxShadow: '0 0 8px rgba(255, 230, 160, 0.8)',
               }}
               className="absolute pointer-events-none"
             />
@@ -252,10 +283,10 @@ export default function CinematicIntro({
       )}
 
       {/* Top Header Bar: Monogram & Skip Intro */}
-      <header className="fixed top-0 inset-x-0 z-50 flex items-center justify-between px-4 sm:px-8 py-3.5 pt-[calc(0.75rem+env(safe-area-inset-top,0px))]">
-        <div className="flex items-center gap-2.5">
-          <SSMonogram size={28} variant="gold" />
-          <span className="font-serif text-xs sm:text-sm tracking-[0.22em] text-[#EAD9B8] uppercase font-medium">
+      <header className="fixed top-0 inset-x-0 z-50 flex items-center justify-between px-3.5 sm:px-8 py-2.5 pt-[calc(0.5rem+env(safe-area-inset-top,0px))]">
+        <div className="flex items-center gap-2">
+          <SSMonogram size={24} variant="gold" />
+          <span className="font-serif text-[11px] sm:text-xs tracking-[0.16em] text-[#F3E5C8] uppercase font-medium drop-shadow-sm truncate max-w-[125px] sm:max-w-none">
             Sahana &amp; Sameep
           </span>
         </div>
@@ -264,51 +295,69 @@ export default function CinematicIntro({
           type="button"
           onClick={handleSkip}
           aria-label="Skip intro and discover full wedding website"
-          className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white/10 hover:bg-white/20 active:scale-95 backdrop-blur-md border border-gold/40 text-gold-light text-[11px] font-sans uppercase tracking-widest font-semibold transition-all cursor-pointer shadow-lg"
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-black/45 hover:bg-black/65 active:scale-95 backdrop-blur-md border border-[#D4AF37]/50 text-[#F5E6C8] text-[10.5px] font-sans uppercase tracking-widest font-semibold transition-all cursor-pointer shadow-lg"
         >
           <span>Skip Intro</span>
-          <ArrowRight className="w-3.5 h-3.5 text-gold-light" />
+          <ArrowRight className="w-3.5 h-3.5 text-[#D4AF37]" />
         </button>
       </header>
 
-      {/* ========================================================
-          CENTRAL STAGE CONTAINER (Strictly Mobile-Friendly)
-          ======================================================== */}
-      <div className="relative z-20 w-full max-w-[420px] px-3.5 flex flex-col items-center justify-center my-auto">
+      {/* ============================================================
+          CENTRAL REVEALED INVITATION STAGE (Strictly Mobile-Friendly)
+          ============================================================ */}
+      <div className="relative z-20 w-full max-w-[420px] px-3.5 flex flex-col items-center justify-center my-auto pt-6 sm:pt-8">
 
         {/* ========================================================
-            ATTRACTIVE PERSONALISED GUEST WELCOME & SPECIAL BANNER
+            ELEGANT FLOATING INVITATION PLAQUE (Guest Welcome Card)
+            Warm Ivory Paper, Double Champagne-Gold Border, Corner Flourishes
             ======================================================== */}
         <motion.div
           animate={{
-            opacity: isCardSettled ? 0 : 1,
-            y: isCardSettled ? -20 : 0,
-            scale: isCardSettled ? 0.95 : 1,
+            opacity: stage === 'SEALED' ? 1 : 0,
+            y: stage === 'SEALED' ? 0 : -28,
+            scale: stage === 'SEALED' ? 1 : 0.9,
           }}
-          transition={{ duration: 0.5 }}
-          className={`w-full flex flex-col items-center text-center mb-3 z-30 px-2 ${
-            isCardSettled ? 'pointer-events-none' : ''
+          transition={{ duration: 0.45 }}
+          className={`w-full flex flex-col items-center text-center mb-2.5 z-30 px-2 ${
+            stage === 'SEALED' ? '' : 'pointer-events-none'
           }`}
         >
-          {/* Guest Greeting Card Container with fine gold border */}
-          <div className="w-full max-w-[340px] px-4 py-2.5 rounded-2xl bg-gradient-to-b from-[#FFFDF8] to-[#FAF4E8] border border-[#C5A16B]/60 shadow-xl text-center mb-2">
-            <span className="font-sans text-[9px] uppercase tracking-[0.26em] text-[#8C632F] font-bold block mb-1">
+          {/* Welcome Plaque Box */}
+          <div className="w-full max-w-[340px] relative px-4 py-3 rounded-2xl bg-gradient-to-b from-[#FFFDF9] via-[#FAF5EB] to-[#F5EEDD] border border-[#D4AF37]/80 shadow-[0_12px_30px_rgba(0,0,0,0.65),0_0_15px_rgba(212,175,55,0.15)] text-center mb-2 overflow-hidden">
+            {/* Inner Double Gold Border */}
+            <div className="absolute inset-1.5 rounded-xl border border-[#C5A16B]/40 pointer-events-none" />
+
+            {/* Corner Floral Flourishes */}
+            <CornerFlourish className="absolute top-1 left-1 w-4 h-4 text-[#C5A16B] opacity-75" />
+            <CornerFlourish className="absolute top-1 right-1 w-4 h-4 text-[#C5A16B] opacity-75 rotate-90" />
+            <CornerFlourish className="absolute bottom-1 left-1 w-4 h-4 text-[#C5A16B] opacity-75 -rotate-90" />
+            <CornerFlourish className="absolute bottom-1 right-1 w-4 h-4 text-[#C5A16B] opacity-75 rotate-180" />
+
+            {/* Top Delicate Lotus Motif */}
+            <div className="flex justify-center mb-0.5">
+              <LotusMotif className="w-5 h-5 text-[#C5A16B]" strokeWidth={1.3} />
+            </div>
+
+            {/* Sub-label: WITH LOVE, WE WELCOME */}
+            <span className="font-sans text-[9px] uppercase tracking-[0.28em] text-[#8C632F] font-bold block mb-1">
               {greeting.label || 'WITH LOVE, WE WELCOME'}
             </span>
 
-            <h1 className="font-serif text-2xl sm:text-3xl font-bold text-[#2A1F1B] tracking-wide leading-tight mb-1">
+            {/* PERSONALISED GUEST NAME (Most Prominent Feature) */}
+            <h1 className="font-serif text-2xl sm:text-3xl font-bold text-[#2A1F1B] tracking-wide leading-tight py-0.5 drop-shadow-xs">
               {greeting.greeting}
             </h1>
 
             <OrnamentalDivider className="max-w-[120px] mx-auto text-[#C5A16B] my-1" />
 
+            {/* Subtitle */}
             <p className="font-serif text-[11.5px] text-[#5C4D44] italic">
               {greeting.subtitle || 'You are a cherished part of our celebration.'}
             </p>
           </div>
 
           {/* "YOU HAVE A SPECIAL INVITATION" pill (Directly above envelope) */}
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#1C1512] border border-[#D4AF37]/50 text-[#EAD9B8] shadow-md text-[10px] font-sans tracking-widest uppercase font-semibold">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#1A0307]/85 backdrop-blur-md border border-[#D4AF37]/65 text-[#F5E6C8] shadow-md text-[10px] font-sans tracking-widest uppercase font-semibold">
             <Sparkles className="w-3 h-3 text-[#D4AF37] animate-pulse" />
             <span>YOU HAVE A SPECIAL INVITATION</span>
             <Sparkles className="w-3 h-3 text-[#D4AF37] animate-pulse" />
@@ -334,7 +383,16 @@ export default function CinematicIntro({
           }}
         >
           {/* Contact Shadow beneath envelope */}
-          <div className="absolute -bottom-6 inset-x-4 h-6 bg-black/60 blur-lg rounded-full pointer-events-none" />
+          <div className="absolute -bottom-6 inset-x-4 h-6 bg-black/75 blur-xl rounded-full pointer-events-none" />
+
+          {/* Soft Golden Halo behind Envelope */}
+          <div
+            className="absolute -inset-4 rounded-3xl pointer-events-none"
+            style={{
+              background: 'radial-gradient(ellipse at 50% 50%, rgba(212, 175, 55, 0.25) 0%, transparent 70%)',
+              filter: 'blur(10px)',
+            }}
+          />
 
           {/* LAYER 1: BACK WALL & INNER GOLD LINING */}
           <div
@@ -510,7 +568,7 @@ export default function CinematicIntro({
                     FRONT FACE: ROYAL ENGLISH INVITATION
                     ==================================================== */}
                 <div
-                  className="w-full h-full bg-[#FFFDF8] rounded-2xl border-2 border-[#C5A16B] shadow-2xl p-4 flex flex-col justify-between text-center text-[#352C28] overflow-hidden"
+                  className="absolute inset-0 w-full h-full bg-[#FFFDF8] rounded-2xl border-2 border-[#C5A16B] shadow-2xl p-4 flex flex-col justify-between text-center text-[#352C28] overflow-hidden"
                   style={{
                     backfaceVisibility: 'hidden',
                     WebkitBackfaceVisibility: 'hidden',
@@ -518,243 +576,164 @@ export default function CinematicIntro({
                   }}
                 >
                   {/* Corner Flourishes */}
-                  <div className="absolute top-1.5 left-1.5 pointer-events-none">
-                    <CornerFlourish className="w-7 h-7 text-[#C5A16B]" position="top-left" />
-                  </div>
-                  <div className="absolute top-1.5 right-1.5 pointer-events-none">
-                    <CornerFlourish className="w-7 h-7 text-[#C5A16B]" position="top-right" />
-                  </div>
-                  <div className="absolute bottom-1.5 left-1.5 pointer-events-none">
-                    <CornerFlourish className="w-7 h-7 text-[#C5A16B]" position="bottom-left" />
-                  </div>
-                  <div className="absolute bottom-1.5 right-1.5 pointer-events-none">
-                    <CornerFlourish className="w-7 h-7 text-[#C5A16B]" position="bottom-right" />
-                  </div>
+                  <CornerFlourish className="absolute top-1 left-1 w-5 h-5 text-[#C5A16B]" />
+                  <CornerFlourish className="absolute top-1 right-1 w-5 h-5 text-[#C5A16B] rotate-90" />
+                  <CornerFlourish className="absolute bottom-1 left-1 w-5 h-5 text-[#C5A16B] -rotate-90" />
+                  <CornerFlourish className="absolute bottom-1 right-1 w-5 h-5 text-[#C5A16B] rotate-180" />
 
-                  {/* Inner Gold Borders */}
-                  <div className="absolute inset-1.5 border border-[#C5A16B]/50 rounded-xl pointer-events-none" />
-                  <div className="absolute inset-2 border border-[#C5A16B]/25 rounded-lg pointer-events-none" />
-
-                  {/* Content (Hidden when closed, fades in as card emerges) */}
-                  <div
-                    className="relative z-10 pt-1 flex flex-col items-center transition-opacity duration-700"
-                    style={{ opacity: isCardEmerging ? 1 : 0 }}
-                  >
-                    {/* Welcome Badge */}
-                    <div className="mb-1 flex flex-col items-center">
-                      <span className="font-sans text-[7.5px] uppercase tracking-[0.24em] text-[#8C632F] font-bold">
-                        {greeting.label || 'WITH LOVE, WE WELCOME'}
-                      </span>
-                      <span className="font-serif text-[12.5px] font-bold text-[#2A1F1B] tracking-wide">
-                        {greeting.greeting}
-                      </span>
+                  {/* Header */}
+                  <div>
+                    <div className="flex justify-center mb-1">
+                      <GaneshaMotif className="w-8 h-8 text-[#A67C45]" strokeWidth={1.3} />
                     </div>
-
-                    {/* Master S&S Monogram */}
-                    <div className="mb-0.5">
-                      <SSMonogram size={38} variant="gold" />
-                    </div>
-
-                    <p className="font-sans text-[7.5px] uppercase tracking-[0.24em] text-[#5C4D44] font-bold mb-0.5 px-2">
-                      WITH THE BLESSINGS OF THE DIVINE AND OUR FAMILIES
+                    <p className="font-kannada text-[11px] text-[#A67C45] tracking-widest font-semibold">
+                      || ಶ್ರೀ ಗಣೇಶಾಯ ನಮಃ ||
                     </p>
-
-                    {/* Names: SAHANA & SAMEEP */}
-                    <div className="flex items-center justify-center gap-2 my-0.5">
-                      <span className="font-serif text-[22px] tracking-[0.16em] font-bold text-[#2A1F1B]">
-                        SAHANA
-                      </span>
-                      <span className="font-script text-2xl text-[#B89255] font-normal">&amp;</span>
-                      <span className="font-serif text-[22px] tracking-[0.16em] font-bold text-[#2A1F1B]">
-                        SAMEEP
-                      </span>
-                    </div>
-
-                    <OrnamentalDivider className="my-1 max-w-[120px] mx-auto text-[#C5A16B]" />
-
-                    <p className="font-serif text-[10.5px] text-[#352C28] italic px-2 leading-tight">
-                      Cordially invite you to join us<br />and celebrate our wedding day.
+                    <p className="font-sans text-[9px] uppercase tracking-[0.28em] text-[#8C632F] font-bold mt-1">
+                      TOGETHER WITH OUR FAMILIES
                     </p>
+                  </div>
 
-                    {/* Date, Muhurtha & Verified Venue */}
-                    <div className="mt-1.5 py-1.5 border-y border-[#C5A16B]/35 w-full max-w-[270px] text-center bg-[#FAF6EF]/70 rounded-lg">
-                      <div className="flex items-center justify-center gap-1.5 text-[11px] font-serif font-bold text-[#2A1F1B] tracking-wider uppercase">
-                        <Calendar className="w-3.5 h-3.5 text-[#A67C45]" />
-                        <span>MONDAY, 08 FEBRUARY 2027</span>
-                      </div>
-                      <div className="text-[10px] font-sans font-bold text-[#8B2628] mt-0.5 tracking-wide flex items-center justify-center gap-1">
-                        <Clock className="w-3 h-3 text-[#8B2628]" />
-                        <span>Muhurtha: 12:35 PM</span>
-                      </div>
-                      <div className="mt-1 pt-1 border-t border-[#C5A16B]/20">
-                        <div className="font-kannada font-bold text-[12px] text-[#2A1F1B] leading-tight">
-                          ವಿಶ್ವಮಾನವ ಸಭಾಭವನ
-                        </div>
-                        <div className="flex items-center justify-center gap-1 text-[10px] text-[#5C4D44] font-medium">
-                          <MapPin className="w-3 h-3 text-[#A67C45] shrink-0" />
-                          <span>Sagara Road, Ripponpete</span>
-                        </div>
-                      </div>
+                  {/* Couple Names */}
+                  <div className="my-auto py-1">
+                    <h2 className="font-serif text-2xl sm:text-3xl font-bold text-[#8B2628] tracking-wide leading-tight">
+                      Sahana
+                    </h2>
+                    <span className="font-serif italic text-sm text-[#A67C45] my-0.5 block">&amp;</span>
+                    <h2 className="font-serif text-2xl sm:text-3xl font-bold text-[#8B2628] tracking-wide leading-tight">
+                      Sameep
+                    </h2>
+                    <OrnamentalDivider className="max-w-[130px] mx-auto text-[#C5A16B] my-1" />
+                    <p className="font-serif text-xs text-[#5C4D44] italic">
+                      Cordially invite you to celebrate our wedding
+                    </p>
+                  </div>
+
+                  {/* Date & Venue Pill Box */}
+                  <div className="bg-[#FAF4E8] rounded-xl border border-[#C5A16B]/40 p-2.5 space-y-1.5 text-left text-xs">
+                    <div className="flex items-center gap-2 text-[#352C28]">
+                      <Calendar className="w-3.5 h-3.5 text-[#A67C45] shrink-0" />
+                      <span className="font-semibold">Thursday, May 07, 2026</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-[#5C4D44] text-[11px]">
+                      <Clock className="w-3.5 h-3.5 text-[#A67C45] shrink-0" />
+                      <span>Muhurtham: 09:15 AM – 10:15 AM</span>
+                    </div>
+                    <div className="flex items-start gap-2 text-[#5C4D44] text-[11px]">
+                      <MapPin className="w-3.5 h-3.5 text-[#A67C45] shrink-0 mt-0.5" />
+                      <span className="leading-tight">Vishwa Manava Seva Bhavana, Bengaluru</span>
                     </div>
                   </div>
 
-                  {/* Actions & "DISCOVER OUR WEDDING" Button */}
-                  <div
-                    className="relative z-10 pt-1 flex flex-col gap-1.5 transition-opacity duration-700"
-                    style={{ opacity: isCardEmerging ? 1 : 0 }}
-                  >
-                    <motion.button
+                  {/* Action Row: Flip Card & Enter Website */}
+                  <div className="pt-2 flex items-center justify-between gap-2 border-t border-[#C5A16B]/30">
+                    <button
+                      type="button"
+                      onClick={() => setIsCardFlipped(true)}
+                      className="px-2.5 py-1 rounded-full bg-[#FAF4E8] hover:bg-[#F3EADB] border border-[#C5A16B]/60 text-[10px] font-sans font-semibold text-[#8C632F] flex items-center gap-1 transition-colors cursor-pointer"
+                    >
+                      <RotateCw className="w-3 h-3" />
+                      <span>ಕನ್ನಡ ಲಗ್ನ ಪತ್ರಿಕೆ</span>
+                    </button>
+
+                    <button
                       type="button"
                       onClick={handleDiscoverWedding}
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                      className="w-full min-h-[48px] py-2.5 px-4 rounded-full bg-gradient-to-r from-[#8C632F] via-[#B89255] to-[#8C632F] text-white shadow-lg active:scale-95 transition-all flex flex-col items-center justify-center cursor-pointer group"
+                      className="px-3.5 py-1.5 rounded-full bg-gradient-to-r from-[#8B2628] to-[#6E1C1E] hover:from-[#A12E30] hover:to-[#8B2628] text-white font-sans text-xs font-semibold uppercase tracking-wider flex items-center gap-1.5 shadow-md active:scale-95 transition-all cursor-pointer"
                     >
-                      <div className="flex items-center gap-1.5 font-sans text-xs uppercase tracking-[0.22em] font-bold">
-                        <span>DISCOVER OUR WEDDING</span>
-                        <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
-                      </div>
-                      <span className="font-serif text-[10px] text-[#FFF4DF] tracking-wide opacity-90">
-                        Explore our celebration, memories and wedding details.
-                      </span>
-                    </motion.button>
-
-                    <div className="flex items-center justify-between px-1 text-[10px]">
-                      <button
-                        type="button"
-                        onClick={() => setIsCardFlipped(true)}
-                        className="font-sans font-semibold text-[#8C632F] hover:text-[#5E3E18] flex items-center gap-1 py-1 active:scale-95 transition-transform cursor-pointer"
-                      >
-                        <RotateCw className="w-3.5 h-3.5 text-[#A67C45]" />
-                        <span>ಕನ್ನಡ ಆಮಂತ್ರಣ ಪತ್ರಿಕೆ (Flip)</span>
-                      </button>
-
-                      <a
-                        href="https://www.google.com/maps?ll=14.002067,75.256803&z=15&t=m&hl=en-US&gl=US&mapclient=embed&cid=15410651585215520925"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="font-sans font-semibold text-[#8B2628] hover:underline flex items-center gap-1 py-1"
-                      >
-                        <Navigation className="w-3 h-3" />
-                        <span>Directions</span>
-                      </a>
-                    </div>
+                      <span>DISCOVER OUR WEDDING</span>
+                      <ArrowRight className="w-3.5 h-3.5" />
+                    </button>
                   </div>
                 </div>
 
                 {/* ====================================================
                     BACK FACE: TRADITIONAL KANNADA INVITATION
-                    (All Kannada, zero isolated English labels!)
                     ==================================================== */}
                 <div
-                  className="w-full h-full bg-[#FAFDF8] rounded-2xl border-2 border-[#4A5D43]/60 shadow-2xl p-4 absolute inset-0 flex flex-col justify-between text-center text-[#352C28] overflow-hidden"
+                  className="absolute inset-0 w-full h-full bg-[#FFFDF8] rounded-2xl border-2 border-[#C5A16B] shadow-2xl p-4 flex flex-col justify-between text-center text-[#352C28] overflow-hidden"
                   style={{
                     backfaceVisibility: 'hidden',
                     WebkitBackfaceVisibility: 'hidden',
                     transform: 'rotateY(180deg)',
                   }}
                 >
-                  {/* Corner Flourishes */}
-                  <div className="absolute top-1.5 left-1.5 pointer-events-none">
-                    <CornerFlourish className="w-7 h-7 text-[#4A5D43]" position="top-left" />
-                  </div>
-                  <div className="absolute top-1.5 right-1.5 pointer-events-none">
-                    <CornerFlourish className="w-7 h-7 text-[#4A5D43]" position="top-right" />
-                  </div>
-                  <div className="absolute bottom-1.5 left-1.5 pointer-events-none">
-                    <CornerFlourish className="w-7 h-7 text-[#4A5D43]" position="bottom-left" />
-                  </div>
-                  <div className="absolute bottom-1.5 right-1.5 pointer-events-none">
-                    <CornerFlourish className="w-7 h-7 text-[#4A5D43]" position="bottom-right" />
-                  </div>
+                  <CornerFlourish className="absolute top-1 left-1 w-5 h-5 text-[#C5A16B]" />
+                  <CornerFlourish className="absolute top-1 right-1 w-5 h-5 text-[#C5A16B] rotate-90" />
+                  <CornerFlourish className="absolute bottom-1 left-1 w-5 h-5 text-[#C5A16B] -rotate-90" />
+                  <CornerFlourish className="absolute bottom-1 right-1 w-5 h-5 text-[#C5A16B] rotate-180" />
 
-                  {/* Inner Borders */}
-                  <div className="absolute inset-1.5 border border-[#4A5D43]/40 rounded-xl pointer-events-none" />
-                  <div className="absolute inset-2 border border-[#8B2628]/20 rounded-lg pointer-events-none" />
-
-                  {/* Kannada Invocation & Content */}
-                  <div className="relative z-10 pt-1 flex flex-col items-center">
-                    <div className="w-10 h-10 rounded-full bg-[#8B2628]/10 border border-[#8B2628]/30 flex items-center justify-center p-1.5 mb-1 shadow-xs">
-                      <GaneshaMotif className="w-7 h-7 text-[#8B2628]" strokeWidth={1.5} />
+                  {/* Sacred Kannada Invocation */}
+                  <div>
+                    <div className="flex justify-center mb-1">
+                      <GaneshaMotif className="w-8 h-8 text-[#A67C45]" strokeWidth={1.3} />
                     </div>
-
-                    <p className="font-kannada font-bold text-xs tracking-widest text-[#8B2628]">
-                      || ಶ್ರೀ ಗಣೇಶಾಯ ನಮಃ ||
+                    <p className="font-kannada text-xs font-bold text-[#8B2628] tracking-wide">
+                      || ಶ್ರೀ ಮಹಾಗಣಪತಯೇ ನಮಃ ||
                     </p>
-                    <p className="font-kannada text-[10px] text-[#4A5D43] font-semibold mt-0.5">
-                      ಶ್ರೀ ಮಂಜುನಾಥ ಸ್ವಾಮಿ ಹಾಗೂ ಕುಲದೇವರುಗಳ ಆಶೀರ್ವಾದದೊಂದಿಗೆ
+                    <p className="font-kannada text-[11px] text-[#A67C45] font-semibold mt-0.5">
+                      ಶುಭ ವಿವಾಹ ಆಮಂತ್ರಣ ಪತ್ರಿಕೆ
                     </p>
-
-                    <div className="my-1.5">
-                      <span className="font-kannada text-[9px] uppercase tracking-[0.2em] text-[#8C632F] font-bold block mb-0.5">
-                        ಶುಭ ವಿವಾಹ ಆಮಂತ್ರಣ ಪತ್ರಿಕೆ
-                      </span>
-                      {/* VERIFIED KANNADA NAMES: ಸಹನ ಮತ್ತು ಸಮೀಪ್ */}
-                      <h2 className="font-kannada font-bold text-2xl text-[#2A1F1B] leading-tight">
-                        ಸಹನ ಮತ್ತು ಸಮೀಪ್
-                      </h2>
-                    </div>
-
-                    <p className="font-kannada text-[11px] text-[#352C28] leading-tight px-1 my-1">
-                      ನಮ್ಮ ವಿವಾಹ ಮಹೋತ್ಸವಕ್ಕೆ ತಾವೆಲ್ಲರೂ ಆಗಮಿಸಿ ನವದಂಪತಿಗಳನ್ನು ಆಶೀರ್ವದಿಸಬೇಕಾಗಿ ವಿನಮ್ರ ಪ್ರಾರ್ಥನೆ.
-                    </p>
-
-                    {/* Schedule in Kannada */}
-                    <div className="mt-1 py-1.5 px-2.5 border-y border-[#4A5D43]/30 w-full max-w-[270px] bg-[#F2F7EF]/80 rounded-lg text-center">
-                      <div className="font-kannada font-bold text-[11.5px] text-[#2A1F1B]">
-                        ದಿನಾಂಕ: ೦೮-೦೨-೨೦೨೭, ಸೋಮವಾರ
-                      </div>
-                      <div className="font-kannada font-bold text-[10.5px] text-[#8B2628] mt-0.5">
-                        ಶುಭ ಮುಹೂರ್ತ: ಮಧ್ಯಾಹ್ನ ೧೨:೩೫ ಕ್ಕೆ
-                      </div>
-                      <div className="mt-0.5 pt-0.5 border-t border-[#4A5D43]/20">
-                        <div className="font-kannada font-bold text-[12px] text-[#2A1F1B]">
-                          ವಿಶ್ವಮಾನವ ಸಭಾಭವನ
-                        </div>
-                        <div className="font-kannada text-[10.5px] text-[#5C4D44]">
-                          ಸಾಗರ ರಸ್ತೆ, ರಿಪ್ಪನ್‌ಪೇಟೆ
-                        </div>
-                      </div>
-                    </div>
                   </div>
 
-                  {/* Actions on Kannada Face */}
-                  <div className="relative z-10 pt-1 flex flex-col gap-1.5">
-                    <motion.button
+                  {/* Couple Kannada Names */}
+                  <div className="my-auto py-1">
+                    <h2 className="font-kannada text-2xl sm:text-3xl font-bold text-[#8B2628] leading-tight">
+                      ಸಹನ
+                    </h2>
+                    <span className="font-kannada text-xs text-[#A67C45] my-0.5 block font-semibold">ಮತ್ತು</span>
+                    <h2 className="font-kannada text-2xl sm:text-3xl font-bold text-[#8B2628] leading-tight">
+                      ಸಮೀಪ್
+                    </h2>
+                    <OrnamentalDivider className="max-w-[130px] mx-auto text-[#C5A16B] my-1" />
+                    <p className="font-kannada text-xs text-[#5C4D44]">
+                      ಇವರ ಶುಭ ವಿವಾಹ ಮಹೋತ್ಸವಕ್ಕೆ ತಮಗೆಲ್ಲರಿಗೂ ಆದರದ ಸುಸ್ವಾಗತ
+                    </p>
+                  </div>
+
+                  {/* Kannada Event Details */}
+                  <div className="bg-[#FAF4E8] rounded-xl border border-[#C5A16B]/40 p-2.5 space-y-1 text-left font-kannada text-xs">
+                    <p className="font-semibold text-[#352C28]">
+                      ತಾ: 07-05-2026, ಗುರುವಾರ
+                    </p>
+                    <p className="text-[#5C4D44] text-[11px]">
+                      ಮುಹೂರ್ತ: ಬೆಳಿಗ್ಗೆ 9:15 ರಿಂದ 10:15 ರವರೆಗೆ
+                    </p>
+                    <p className="text-[#5C4D44] text-[11px] leading-tight">
+                      ಸ್ಥಳ: ವಿಶ್ವ ಮಾನವ ಸೇವಾ ಭವನ, ಒಕ್ಕಲಿಗರ ಸಂಘ, ಆಸ್ಟಿನ್ ಟೌನ್, ಬೆಂಗಳೂರು
+                    </p>
+                  </div>
+
+                  {/* Flip Back & Maps Row */}
+                  <div className="pt-2 flex items-center justify-between gap-2 border-t border-[#C5A16B]/30">
+                    <button
                       type="button"
-                      onClick={handleDiscoverWedding}
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                      className="w-full min-h-[48px] py-2.5 px-4 rounded-full bg-gradient-to-r from-[#4A5D43] via-[#5C7453] to-[#4A5D43] text-white shadow-lg active:scale-95 transition-all flex flex-col items-center justify-center cursor-pointer group"
+                      onClick={() => setIsCardFlipped(false)}
+                      className="px-2.5 py-1 rounded-full bg-[#FAF4E8] hover:bg-[#F3EADB] border border-[#C5A16B]/60 text-[10px] font-sans font-semibold text-[#8C632F] flex items-center gap-1 transition-colors cursor-pointer"
                     >
-                      <div className="flex items-center gap-1.5 font-kannada text-xs font-bold">
-                        <span>ನಮ್ಮ ವಿವಾಹ ವಿವರಗಳನ್ನು ನೋಡಿ</span>
-                        <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
-                      </div>
-                      <span className="font-kannada text-[10px] text-[#E8F3E5] opacity-90">
-                        ನಮ್ಮ ವಿವಾಹದ ಸಂಭ್ರಮ ಹಾಗೂ ನೆನಪುಗಳನ್ನು ಅನ್ವೇಷಿಸಿ.
-                      </span>
-                    </motion.button>
+                      <RotateCw className="w-3 h-3" />
+                      <span>English Card</span>
+                    </button>
 
-                    <div className="flex items-center justify-between px-1 text-[10px]">
-                      <button
-                        type="button"
-                        onClick={() => setIsCardFlipped(false)}
-                        className="font-kannada font-semibold text-[#4A5D43] hover:text-[#2E3C29] flex items-center gap-1 py-1 active:scale-95 transition-transform cursor-pointer"
-                      >
-                        <RotateCw className="w-3.5 h-3.5 text-[#4A5D43]" />
-                        <span>ಇಂಗ್ಲಿಷ್ ಪತ್ರಿಕೆ (Flip to English)</span>
-                      </button>
-
+                    <div className="flex items-center gap-2">
                       <a
                         href="https://www.google.com/maps?ll=14.002067,75.256803&z=15&t=m&hl=en-US&gl=US&mapclient=embed&cid=15410651585215520925"
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="font-kannada font-semibold text-[#8B2628] hover:underline flex items-center gap-1 py-1"
+                        className="font-kannada font-semibold text-[#8B2628] hover:underline flex items-center gap-1 py-1 text-xs"
                       >
                         <Navigation className="w-3 h-3" />
                         <span>ದಾರಿ ನಕ್ಷೆ</span>
                       </a>
+
+                      <button
+                        type="button"
+                        onClick={handleDiscoverWedding}
+                        className="px-3 py-1.5 rounded-full bg-gradient-to-r from-[#8B2628] to-[#6E1C1E] text-white font-sans text-xs font-semibold uppercase tracking-wider flex items-center gap-1 shadow-md active:scale-95 transition-all cursor-pointer"
+                      >
+                        <span>ಮುಂದುವರಿಯಿರಿ</span>
+                        <ArrowRight className="w-3 h-3" />
+                      </button>
                     </div>
                   </div>
                 </div>
@@ -850,7 +829,7 @@ export default function CinematicIntro({
                       />
                     )}
 
-                    {/* Organic Wax Seal Surface */}
+                    {/* Organic Royal Gold Wax Seal Surface */}
                     <svg viewBox="0 0 100 100" className="w-full h-full drop-shadow-xl" shapeRendering="geometricPrecision">
                       <defs>
                         <radialGradient id="royalWaxGrad" cx="35%" cy="30%" r="70%">
@@ -870,7 +849,7 @@ export default function CinematicIntro({
                       <circle cx="50" cy="50" r="30" fill="#8C632F" fillOpacity="0.45" />
                     </svg>
 
-                    {/* Master S&S Monogram Center (Correct Orientation!) */}
+                    {/* Master S&S Monogram Center (Correct Vector Orientation) */}
                     <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                       <SSMonogram size={38} variant="seal" />
                     </div>
@@ -891,48 +870,48 @@ export default function CinematicIntro({
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 8 }}
               transition={{ duration: 0.3 }}
-              className="mt-4 flex flex-col items-center gap-1.5 pointer-events-none"
+              className="mt-3.5 flex flex-col items-center gap-1.5 pointer-events-none"
             >
-              <div className="flex items-center gap-2 text-xs font-sans text-[#EAD9B8] tracking-wider">
+              <div className="flex items-center gap-2 text-xs font-sans text-[#F5E6C8] tracking-wider">
                 <span className="w-2 h-2 rounded-full bg-[#D4AF37] animate-ping" />
                 <span className="font-medium">Tap the golden seal to open</span>
               </div>
 
               {/* 5-Second Grace Countdown Badge */}
-              <div className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-black/40 border border-[#C5A16B]/30 text-[10px] font-sans text-[#C5A16B] tracking-wider">
+              <div className="flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-black/60 border border-[#D4AF37]/40 text-[10px] font-sans text-[#EAD9B8] tracking-wider shadow-sm">
                 <span>Opening automatically in</span>
-                <span className="font-bold text-[#FFFDF8] w-3 text-center">{countdownSeconds}s</span>
+                <span className="font-bold text-[#FFE8A3] w-3 text-center">{countdownSeconds}s</span>
               </div>
             </motion.div>
           )}
         </AnimatePresence>
 
+        {/* ========================================================
+            BOTTOM STAGE FOOTER: Date, Venue & Blessing
+            ======================================================== */}
+        <motion.div
+          animate={{
+            opacity: stage === 'SEALED' ? 0.85 : 0,
+            y: stage === 'SEALED' ? 0 : 12,
+          }}
+          transition={{ duration: 0.35 }}
+          className="mt-3 flex flex-col items-center text-center pointer-events-none"
+        >
+          <p className="font-serif text-[10.5px] text-[#EAD9B8] tracking-widest uppercase">
+            May 07, 2026 • Vishwa Manava Seva Bhavana, Bengaluru
+          </p>
+        </motion.div>
+
       </div>
 
-      {/* ========================================================
-          GOLDEN CURTAIN TRANSITION PANELS
-          Gracefully sweep open when "DISCOVER OUR WEDDING" is tapped
-          ======================================================== */}
-      <AnimatePresence>
-        {stage === 'CURTAIN_TRANSITION' && (
-          <div className="fixed inset-0 z-50 pointer-events-none overflow-hidden">
-            {/* Left Curtain */}
-            <motion.div
-              initial={{ x: '0%' }}
-              animate={{ x: '-100%' }}
-              transition={{ duration: 1.15, ease: [0.22, 1, 0.36, 1] }}
-              className="absolute inset-y-0 left-0 w-1/2 bg-gradient-to-r from-[#201915] via-[#3D2D23] to-[#523E30] border-r-2 border-[#D4AF37] shadow-2xl"
-            />
-            {/* Right Curtain */}
-            <motion.div
-              initial={{ x: '0%' }}
-              animate={{ x: '100%' }}
-              transition={{ duration: 1.15, ease: [0.22, 1, 0.36, 1] }}
-              className="absolute inset-y-0 right-0 w-1/2 bg-gradient-to-l from-[#201915] via-[#3D2D23] to-[#523E30] border-l-2 border-[#D4AF37] shadow-2xl"
-            />
-          </div>
-        )}
-      </AnimatePresence>
+      {/* ============================================================
+          LUXURY WEDDING STAGE VELVET CURTAINS & PELMET OVERLAY
+          ============================================================ */}
+      <VelvetCurtains
+        isOpen={curtainsOpen}
+        isTransitioning={isTransitioning}
+        prefersReducedMotion={prefersReducedMotion}
+      />
     </div>
   );
 }
